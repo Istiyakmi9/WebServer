@@ -4,13 +4,15 @@
 #include"DbContext.h"
 #include"UserDetail.h"
 #include<stdio.h>
+#include<JsonManager.h>
+#include<map>
 
 std::string LoginController::Auth(std::string arg) {
+	std::unique_ptr<UserDetail> userDetail(new UserDetail(arg));
+
 	std::string data = "";
-	std::string databaseName = "anyshop.db";
 	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
-	std::string path = applicationConfig->getApplicationWorkingDirectory() + "\\" + databaseName;
-	std::cout << "Database path:" << path << std::endl;
+	std::string path = applicationConfig->getConnectionString();
 
 	bool fileExists = false;
 	FILE* file;
@@ -22,12 +24,19 @@ std::string LoginController::Auth(std::string arg) {
 
 	if (fileExists) {
 		DbContext* context = new DbContext(path.c_str());
-		std::map<std::string, std::string>* result = context->getResultSet("Select * from login;");
-		data = result->find("table")->second;
+		std::string query = "Select * from login where UserName='";
+		query.append(userDetail->getUserName());
+		query.append("' and Password = '");
+		query.append(userDetail->getPassword());
+		query.append("';");
+
+		std::map<std::string, std::string>* result = context->getResultSet(query.c_str());
+		if (result->count("table") > 0)
+			data = result->find("table")->second;
 		std::free(result);
 	}
 	else {
-		data.append("File: " + databaseName + " not exists");
+		data.append("File: " + path + " not exists");
 	}
 
 	return data;

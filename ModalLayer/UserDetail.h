@@ -12,18 +12,15 @@ class DECLSPEC UserDetail
 {
 private:
 	int loginId;
-	std::string userName;
-	std::string password;
-	std::string mobile;
-	std::string email;
-	int roleId;
+	std::string Username;
+	std::string Password;
+	std::string Mobile;
+	std::string Email;
+	int RoleId;
 
 public:
-	UserDetail(int loginId,
-		std::string userName,
-		std::string password,
-		std::string mobile,
-		std::string Eemail,
-		int roleId);
+	UserDetail(std::string);
+	std::string getUserName();
+	std::string getPassword();
 };
 

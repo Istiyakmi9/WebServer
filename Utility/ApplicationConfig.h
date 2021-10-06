@@ -17,6 +17,7 @@ private:
 	*/
 	static ApplicationConfig* instance;
 	std::string applicationWorkingDirectory;
+	std::string connectionString;
 
 public:
 	// -------------  Singleton ApplicationCofig: Stopping copy constructor ----------- //
@@ -34,6 +35,8 @@ public:
 	/*
 		public method of singleton class
 	*/
+	std::string getConnectionString();
+	void setConnectionString(std::string filePath);
 	std::string getApplicationWorkingDirectory();
 	void setApplicationWorkingDirectory(std::string);
 };

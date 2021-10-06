@@ -138,17 +138,7 @@ void HttpRequest::buildRequest(std::vector<char>* rawRequestData, int contentLen
 		}
 
 		if (isBodyAvailable) {
-			bodyData = lineStream.str();
-			int i = 0;
-			while (i < bodyData.length()) {
-				if (bodyData[i] == '\t')
-					bodyData[i] = ' ';
-				else if (bodyData[i] == '"')
-					bodyData[i] = '\"';
-				i++;
-			}
-			JsonManager::trim(bodyData);
-			this->setBody(bodyData);
+			this->setBody(lineStream.str());
 		}
 	}
 }

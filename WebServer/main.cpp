@@ -31,9 +31,13 @@ void runAngular() {
 int main(int argc, char* argv[]) {
 	//runAngular();
 	current_working_directory();
-	/*JsonManager jsonManager;
-	std::cout << jsonManager.stringify("name", "istiyak") << std::endl;*/
+	std::string databaseName = "anyshop.db";
+	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
+	std::string path = applicationConfig->getApplicationWorkingDirectory() + "\\" + databaseName;
+	applicationConfig->setConnectionString(path);
+
 	ManageSocket socket;
 	socket.createSocket();
+
 	return 0;
 }

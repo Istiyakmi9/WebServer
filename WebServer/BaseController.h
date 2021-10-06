@@ -5,6 +5,7 @@
 #include<map>
 
 using std::placeholders::_1;
+using std::bind;
 
 template<class T>
 class BaseController
@@ -32,6 +33,7 @@ public:
 	}
 
 	void add(std::string name, Function pointer) {
+		if(fn->count(name) <= 0)
 		fn->insert({ name, pointer });
 	}
 };

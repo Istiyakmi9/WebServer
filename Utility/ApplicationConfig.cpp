@@ -30,3 +30,11 @@ std::string ApplicationConfig::getApplicationWorkingDirectory() {
 void ApplicationConfig::setApplicationWorkingDirectory(std::string pwd) {
 	this->applicationWorkingDirectory = pwd;
 }
+
+std::string ApplicationConfig::getConnectionString() {
+	return this->connectionString;
+}
+
+void ApplicationConfig::setConnectionString(std::string filePath) {
+	this->connectionString = filePath;
+}

@@ -2,12 +2,14 @@
 
 #include<iostream>
 #include<list>
+#include<map>
 
 #ifdef JSONMANAGER_H
 #define DECLSPEC __declspec(dllexport)
 #else
 #define DECLSPEC __declspec(dllimport)
 #endif
+
 
 class DECLSPEC JsonManager
 {
@@ -19,5 +21,7 @@ public:
 	static void ltrim(std::string& s);
 	static void rtrim(std::string& s);
 	static void trim(std::string& s);
+
+	static std::map<std::string, std::string>* toRequestMap(std::string json);
 };
 
