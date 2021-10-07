@@ -3,6 +3,7 @@
 #include<map>
 #include"LoginController.h"
 #include <algorithm>
+#include"DashboardController.h"
 
 HttpContext::HttpContext(std::vector<char>* data, int dataLength) {
 	mapping = new std::map<std::string, int>();
@@ -14,7 +15,8 @@ HttpContext::HttpContext(std::vector<char>* data, int dataLength) {
 
 enum ControllerMapping {
 	Login = 1,
-	Reports = 2
+	Reports = 2,
+	Dashboard = 3
 };
 
 void HttpContext::createHttpRequest(std::vector<char>* data, int dataLen) {
@@ -25,7 +27,7 @@ std::string HttpContext::getRequestType() {
 	return request->getType();
 }
 
-std::string HttpContext::getHttpResponse(std::string responseMessage) {	
+std::string HttpContext::getHttpResponse(std::string responseMessage) {
 	std::string contentType = "application/json";
 	if (request->header->count("Content-Type") > 0) {
 		auto result = request->header->find("Content-Type");
@@ -87,6 +89,20 @@ std::string HttpContext::handleIncomingRequest() {
 				  break;
 		case Reports:
 			break;
+		case Dashboard: {
+			DashboardController* dashboard = nullptr;
+			try {
+				dashboard = new DashboardController();
+				if (method == "")
+					method = request->getType();
+				responseMessage = dashboard->RequestGateway(method, request->getBody());
+				delete dashboard;
+			}
+			catch (int e) {
+				delete dashboard;
+			}
+		}
+					  break;
 		}
 	}
 	catch (std::string ex) {
@@ -104,4 +120,5 @@ std::string HttpContext::handleIncomingRequest() {
 
 void HttpContext::addController() {
 	mapping->insert({ "login", Login });
+	mapping->insert({ "dashboard", Dashboard });
 }

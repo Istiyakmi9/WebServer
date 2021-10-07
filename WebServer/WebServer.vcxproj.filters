@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ManageSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,13 +30,19 @@
     <ClCompile Include="Constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BaseController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="LoginController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BaseController.cpp">
+    <ClCompile Include="DashboardController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,10 +62,13 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BaseController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="LoginController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseController.h">
+    <ClInclude Include="DashboardController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

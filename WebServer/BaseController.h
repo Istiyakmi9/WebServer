@@ -11,7 +11,7 @@ template<class T>
 class BaseController
 {
 private:
-	typedef std::function<std::string (std::string)> Function;
+	typedef std::function<std::string (std::string arg0)> Function;
 	std::map<std::string, Function>* fn;
 
 public:

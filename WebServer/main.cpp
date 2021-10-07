@@ -31,7 +31,7 @@ void runAngular() {
 int main(int argc, char* argv[]) {
 	//runAngular();
 	current_working_directory();
-	std::string databaseName = "anyshop.db";
+	std::string databaseName = "Shop.db";
 	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
 	std::string path = applicationConfig->getApplicationWorkingDirectory() + "\\" + databaseName;
 	applicationConfig->setConnectionString(path);

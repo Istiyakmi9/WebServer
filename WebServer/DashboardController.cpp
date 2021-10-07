@@ -1,14 +1,11 @@
-#include "LoginController.h"
-#include"sqlite3.h"
-#include"ApplicationConfig.h"
-#include"DbContext.h"
+#include "DashboardController.h"
 #include"UserDetail.h"
-#include<stdio.h>
 #include<JsonManager.h>
-#include<map>
+#include<ApplicationConfig.h>
+#include<DbContext.h>
 
-std::string LoginController::Auth(std::string arg) {
-	std::unique_ptr<UserDetail> userDetail(new UserDetail(arg));
+std::string DashboardController::getMenu(std::string args) {
+	std::unique_ptr<UserDetail> userDetail(new UserDetail(args));
 
 	std::string data = "";
 	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
@@ -24,27 +21,20 @@ std::string LoginController::Auth(std::string arg) {
 
 	if (fileExists) {
 		DbContext* context = new DbContext(path.c_str());
-		
-		std::string query = "Select * from login where Username='";
+		std::string query = "Select * from menu'";
 		query.append(userDetail->getUserName());
 		query.append("' and Password = '");
 		query.append(userDetail->getPassword());
 		query.append("';");
 
 		std::map<std::string, std::string>* result = context->getResultSet(query.c_str());
-		if (result->count("table") > 0) {
-			std::free(result);
-			query = "SELECT * from rolesandmenu;";
-			result = context->getResultSet(query.c_str());
-
-			if (result->count("table") > 0)
-				data = result->find("table")->second;
-		}
+		if (result->count("table") > 0)
+			data = result->find("table")->second;
 		std::free(result);
 	}
 	else {
 		data.append("File: " + path + " not exists");
 	}
 
-	return "{\"menu\": " + data + "}";
+	return data;
 }

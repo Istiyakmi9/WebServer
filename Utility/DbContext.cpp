@@ -22,8 +22,8 @@ int DbContext::executeNonQuery(const char* query) {
 	return exit;
 }
 
-void DbContext::setResult(std::string key, std::string value) {
-	this->resultSet->insert({ key, value });
+void DbContext::setResult(std::string value) {
+	records << value;
 }
 
 int callback(void* NotUsed, int argc, char** argv, char** azColName) {
@@ -32,10 +32,10 @@ int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 	std::string column = "";
 	std::string value = "";
 	std::string result;
-	result.append("{");
+	result.append(dbContext->seperater + "{");
 	while (i < argc) {
 		column = azColName[i];
-		value = argv[i];
+		value = argv[i] ? argv[i] : "null";
 		if (i != 0)
 			result.append(",");
 		result.append("\"" + column + "\": ");
@@ -43,13 +43,18 @@ int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 		i++;
 	}
 	result.append("}");
-	dbContext->setResult("table", result);
+	dbContext->seperater = ",";
+	dbContext->setResult(result);
 	return 0;
 }
 
 std::map<std::string, std::string>* DbContext::getResultSet(const char* query) {
 	sqlite3* db;
 	int exit = 0;
+	records.str("");
+	records.clear();
+	seperater = "";
+	resultSet = new std::map<std::string, std::string>();
 
 	try {
 		exit = sqlite3_open(path, &db);
@@ -65,6 +70,6 @@ std::map<std::string, std::string>* DbContext::getResultSet(const char* query) {
 		std::cerr << e.what();
 	}
 	sqlite3_close(db);
-	std::cout << resultSet << std::endl;
+	resultSet->insert({ "table", "[" + records.str() + "]"});
 	return std::move(this->resultSet);
 }

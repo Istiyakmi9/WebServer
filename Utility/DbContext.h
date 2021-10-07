@@ -8,20 +8,23 @@
 
 #include<iostream>
 #include<map>
+#include<sstream>
 
 class DECLSPEC DbContext
 {
 private:
 	const char* path;
+	std::ostringstream records;
 	std::map<std::string, std::string>* resultSet = nullptr;
 
 public:
 	DbContext(const char* dbPath) {
 		path = dbPath;
-		resultSet = new std::map<std::string, std::string>();
 	}
+
+	std::string seperater = "";
 	int executeNonQuery(const char* query);
 	std::map<std::string, std::string>* getResultSet(const char* query);
-	void setResult(std::string key, std::string value);
+	void setResult(std::string value);
 };
 
