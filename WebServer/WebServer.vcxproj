@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseController.cpp" />
+    <ClCompile Include="ControllerHandler.cpp" />
     <ClCompile Include="DashboardController.cpp" />
     <ClCompile Include="HttpContext.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
@@ -169,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="BaseController.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="ControllerHandler.h" />
     <ClInclude Include="DashboardController.h" />
     <ClInclude Include="HttpContext.h" />
     <ClInclude Include="HttpRequest.h" />

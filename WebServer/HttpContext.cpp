@@ -6,18 +6,11 @@
 #include"DashboardController.h"
 
 HttpContext::HttpContext(std::vector<char>* data, int dataLength) {
-	mapping = new std::map<std::string, int>();
-	addController();
+	_controllerHandler = ControllerHandler::InstanceOf();
 	request = std::make_unique<HttpRequest>();
 	response = std::make_unique<HttpResponse>();
 	createHttpRequest(data, dataLength);
 }
-
-enum ControllerMapping {
-	Login = 1,
-	Reports = 2,
-	Dashboard = 3
-};
 
 void HttpContext::createHttpRequest(std::vector<char>* data, int dataLen) {
 	request->buildRequest(data, dataLen);
@@ -59,51 +52,17 @@ std::string HttpContext::handleIncomingRequest() {
 		*	method using routetable
 		*/
 
-		std::string method = table.get()->find("method")->second;
-		std::string controller = table.get()->find("controller")->second;
+		std::string method = "";
+		std::string controller = "";
 
+		if (table.get()->count("method") > 0)
+			method = table.get()->find("method")->second;
 
-		//std::string controllerName = "";
-		//std::transform(controller.begin(),
-		//	controller.end(),
-		//	controllerName.begin(),
-		//	::tolower);
+		if (table.get()->count("controller") > 0)
+			controller = table.get()->find("controller")->second;
 
-		auto maptype = mapping->find(controller);
-		int controllerId = maptype->second;
-
-		switch (controllerId) {
-		case Login: {
-			LoginController* loginController = nullptr;
-			try {
-				loginController = new LoginController();
-				if (method == "")
-					method = request->getType();
-				responseMessage = loginController->RequestGateway(method, request->getBody());
-				delete loginController;
-			}
-			catch (int e) {
-				delete loginController;
-			}
-		}
-				  break;
-		case Reports:
-			break;
-		case Dashboard: {
-			DashboardController* dashboard = nullptr;
-			try {
-				dashboard = new DashboardController();
-				if (method == "")
-					method = request->getType();
-				responseMessage = dashboard->RequestGateway(method, request->getBody());
-				delete dashboard;
-			}
-			catch (int e) {
-				delete dashboard;
-			}
-		}
-					  break;
-		}
+		if (method != "" && controller != "")
+			responseMessage = _controllerHandler->CallToController(controller, method, this->request->getBody());
 	}
 	catch (std::string ex) {
 		std::cerr << "Error occured message: " << ex << std::endl;
@@ -116,9 +75,4 @@ std::string HttpContext::handleIncomingRequest() {
 			responseMessage = "\"" + responseMessage + "\"";
 	}
 	return getHttpResponse(responseMessage);
-}
-
-void HttpContext::addController() {
-	mapping->insert({ "login", Login });
-	mapping->insert({ "dashboard", Dashboard });
 }
