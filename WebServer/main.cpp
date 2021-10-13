@@ -1,4 +1,3 @@
-#include<iostream>
 #include<winsock2.h>
 #include<Ws2tcpip.h>
 #include<vector>
@@ -9,6 +8,9 @@
 #include"ApplicationConfig.h"
 #include<list>
 #include<direct.h>
+#include<iostream>
+#include"Util.h"
+#include<sstream>
 
 #pragma comment (lib, "ws2_32.lib")
 
@@ -30,11 +32,23 @@ void runAngular() {
 
 int main(int argc, char* argv[]) {
 	//runAngular();
+
+	/*-------------- getting application working directory -------------------*/
 	current_working_directory();
+
+	/*-------------- application used database name -------------------*/
 	std::string databaseName = "Shop.db";
+
+
+	/*-------------- Creating singleton object for ApplicationConfig class -------------------*/
 	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
 	std::string path = applicationConfig->getApplicationWorkingDirectory() + "\\" + databaseName;
+	
+	/*-------------- Setting up database connection string -------------------*/
 	applicationConfig->setConnectionString(path);
+
+	/*-------------- configure and read application json file -------------------*/
+	applicationConfig->loadConfiguration("procedures.json");
 
 	ManageSocket socket;
 	socket.createSocket();

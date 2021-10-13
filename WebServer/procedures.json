@@ -1,0 +1,7 @@
+{
+  "proc": "select * from abc",
+  "select": "select * from abc",
+  "stored": "select * from abc",
+  "gets": "select * from abc",
+  "puts": "select * from abc"
+}

@@ -86,7 +86,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USERDETAIL_H</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USERDETAIL_H;PRODUCTMODAL_H</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Utility;</AdditionalIncludeDirectories>
@@ -102,7 +102,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USERDETAIL_H</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USERDETAIL_H;PRODUCTMODAL_H</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Utility;</AdditionalIncludeDirectories>
@@ -118,7 +118,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USERDETAIL_H</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USERDETAIL_H;PRODUCTMODAL_H</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Utility;</AdditionalIncludeDirectories>
@@ -134,7 +134,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USERDETAIL_H</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USERDETAIL_H;PRODUCTMODAL_H</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Utility;</AdditionalIncludeDirectories>
@@ -147,9 +147,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ProductModal.h" />
     <ClInclude Include="UserDetail.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ProductModal.cpp" />
     <ClCompile Include="UserDetail.cpp" />
   </ItemGroup>
   <ItemGroup>

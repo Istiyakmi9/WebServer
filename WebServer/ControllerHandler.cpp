@@ -1,5 +1,7 @@
 #include "ControllerHandler.h"
 #include"LoginController.h"
+#include"MasterController.h"
+
 #include <algorithm>
 #include"DashboardController.h"
 #include<mutex>
@@ -46,6 +48,10 @@ std::string ControllerHandler::CallToController(std::string controller, std::str
 									 break;
 		case ControllerMapping::Reports:
 			break;
+		case ControllerMapping::Registration: {
+
+		}
+											break;
 		case ControllerMapping::Dashboard: {
 			DashboardController* dashboard = nullptr;
 			try {
@@ -55,6 +61,19 @@ std::string ControllerHandler::CallToController(std::string controller, std::str
 			}
 			catch (int e) {
 				delete dashboard;
+			}
+		}
+										 break;
+
+		case ControllerMapping::Master: {
+			MasterController* master = nullptr;
+			try {
+				master = new MasterController();
+				responseMessage = master->RequestGateway(method, requestBody);
+				delete master;
+			}
+			catch (int e) {
+				delete master;
 			}
 		}
 										 break;

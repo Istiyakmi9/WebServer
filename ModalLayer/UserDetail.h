@@ -12,10 +12,24 @@ class DECLSPEC UserDetail
 {
 private:
 	int loginId;
+	int UserUid;
 	std::string Username;
 	std::string Password;
 	std::string Mobile;
 	std::string Email;
+	std::string FirstName;
+	std::string LastName;
+	std::string Address;
+	std::string Dob;
+	std::string DoJ;
+	std::string State;
+	std::string City;
+	std::string CustBankAccountNo;
+	std::string IFSCCode;
+	std::string AlternetNo;
+	std::string CreatedOn;
+	int ShopUid;
+	int AccessUid;
 	int RoleId;
 
 public:

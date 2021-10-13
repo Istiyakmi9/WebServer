@@ -18,9 +18,15 @@
     <ClInclude Include="UserDetail.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ProductModal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UserDetail.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProductModal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

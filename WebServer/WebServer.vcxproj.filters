@@ -48,6 +48,12 @@
     <ClCompile Include="ControllerHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RegistrationController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MasterController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ManageSocket.h">
@@ -77,8 +83,15 @@
     <ClInclude Include="ControllerHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RegistrationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MasterController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="procedures.json" />
   </ItemGroup>
 </Project>

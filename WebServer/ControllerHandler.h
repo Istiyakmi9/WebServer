@@ -6,7 +6,9 @@
 enum class ControllerMapping {
 	Login = 1,
 	Reports = 2,
-	Dashboard = 3
+	Dashboard = 3,
+	Registration = 4,
+	Master = 5
 };
 
 class ControllerHandler
@@ -18,6 +20,8 @@ private:
 		mapping = new std::map<std::string, ControllerMapping>();
 		mapping->insert({ "login", ControllerMapping::Login });
 		mapping->insert({ "dashboard", ControllerMapping::Dashboard });
+		mapping->insert({ "registration", ControllerMapping::Registration });
+		mapping->insert({ "master", ControllerMapping::Master });
 	}
 
 public:
