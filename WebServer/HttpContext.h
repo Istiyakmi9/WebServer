@@ -4,7 +4,7 @@
 #include<vector>
 #include"HttpRequest.h"
 #include"HttpResponse.h"
-#include"ControllerHandler.h"
+#include"FrontController.h"
 
 class HttpContext
 {
@@ -12,7 +12,7 @@ private:
 	std::unique_ptr<HttpRequest> request = nullptr;
 	std::unique_ptr<HttpResponse> response = nullptr;
 	void createHttpRequest(std::vector<char>*, int);
-	ControllerHandler* _controllerHandler;
+	FrontController* _frontController;
 
 public:
 	explicit HttpContext(std::vector<char>*, int);

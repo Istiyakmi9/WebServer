@@ -8,6 +8,7 @@
 #endif
 
 #include<iostream>
+#include<map>
 
 class DECLSPEC ApplicationConfig
 {

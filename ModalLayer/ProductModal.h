@@ -12,9 +12,20 @@
 #include<map>
 #include<functional>
 #include<string>
+#include<map>
+#include"JsonManager.h"
+#include<map>
+#include"JsonManager.h"
 
 using std::placeholders::_1;
 using std::bind;
+
+
+/*--------- Method names enum -----------*/
+
+enum class FuncNames {
+	setActualPrice, setBranName, setBrandUid, setCGST, setCatagoryName, setCatagoryUid, setDescription, setExpiryDate, setHSNNo, setIGST, setItemName, setMRP, setQuantity, setSGST, setSellingPrice, setSerialNo, setVendorUid
+};
 
 class DECLSPEC ProductModal
 {
@@ -26,27 +37,70 @@ private:
 	int CGST;
 	int SGST;
 
-	std::map<std::string, std::function<void(std::string arg)>>* fns;
+	std::string ItemName;
+	long VendorUid;
+	std::string BranName;
+	long BrandUid;
+	std::string SerialNo;
+	int Quantity;
+	std::string HSNNo;
+	long MRP;
+	long ActualPrice;
+	long SellingPrice;
+	struct tm* ExpiryDate;
 
 public:
-	ProductModal(std::string json);
+	ProductModal();
 	~ProductModal();
+	long getActualPrice();
+	void setActualPrice(long value);
 
-	void setCatagoryName(std::string catagoryName);
-	std::string getCatagoryName();
-	
-	void setCatagoryUid(std::string catagoryUid);
-	long getCatagoryUid();
-	
-	void setDescription(std::string Description);
-	std::string getDescription();
+	std::string getBranName();
+	void setBranName(std::string value);
 
-	void setIGST(std::string IGST);
-	int getIGST();
+	long getBrandUid();
+	void setBrandUid(long value);
 
-	void setCGST(std::string CGST);
 	int getCGST();
+	void setCGST(int value);
 
-	void setSGST(std::string SGST);
+	std::string getCatagoryName();
+	void setCatagoryName(std::string value);
+
+	long getCatagoryUid();
+	void setCatagoryUid(long value);
+
+	std::string getDescription();
+	void setDescription(std::string value);
+
+	struct tm* getExpiryDate();
+	void setExpiryDate(struct tm* value);
+
+	std::string getHSNNo();
+	void setHSNNo(std::string value);
+
+	int getIGST();
+	void setIGST(int value);
+
+	std::string getItemName();
+	void setItemName(std::string value);
+
+	long getMRP();
+	void setMRP(long value);
+
+	int getQuantity();
+	void setQuantity(int value);
+
 	int getSGST();
+	void setSGST(int value);
+
+	long getSellingPrice();
+	void setSellingPrice(long value);
+
+	std::string getSerialNo();
+	void setSerialNo(std::string value);
+
+	long getVendorUid();
+	void setVendorUid(long value);
+	void setPrivateFieldsValue(std::string);
 };

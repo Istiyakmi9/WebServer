@@ -1,7 +1,7 @@
 {
-  "proc": "select * from abc",
-  "select": "select * from abc",
-  "stored": "select * from abc",
-  "gets": "select * from abc",
-  "puts": "select * from abc"
+  "InsertCatagory": "Insert into Catagory(ParentCatagoryUid, CatagoryName, Description, AddedOn, UpdateOn, CreatedBy, ModifiedBy) Values",
+  "SelectRolesAndMenu": "SELECT * from rolesandmenu;",
+  "SelectCatagory": "SELECT * from Catagory;",
+  "SelectItemBrands": "SELECT * from ItemBrands;",
+  "SelectLogin": "Select * from login where Username = '?' and password = '?';"
 }

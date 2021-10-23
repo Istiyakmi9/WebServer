@@ -8,39 +8,41 @@ enum class ControllerMapping {
 	Reports = 2,
 	Dashboard = 3,
 	Registration = 4,
-	Master = 5
+	Master = 5,
+	ItemAndGoods = 6
 };
 
-class ControllerHandler
+class FrontController
 {
 private:
 	std::map<std::string, ControllerMapping>* mapping;
-	static ControllerHandler* instance;
-	ControllerHandler() {
+	static FrontController* instance;
+	FrontController() {
 		mapping = new std::map<std::string, ControllerMapping>();
 		mapping->insert({ "login", ControllerMapping::Login });
 		mapping->insert({ "dashboard", ControllerMapping::Dashboard });
 		mapping->insert({ "registration", ControllerMapping::Registration });
 		mapping->insert({ "master", ControllerMapping::Master });
+		mapping->insert({ "itemandgoods", ControllerMapping::ItemAndGoods });
 	}
 
 public:
 	// -------------  Singleton ApplicationCofig: Stopping copy constructor ----------- //
-	ControllerHandler(const ControllerHandler&) = delete;
+	FrontController(const FrontController&) = delete;
 
-	~ControllerHandler() {
+	~FrontController() {
 		delete instance;
 		delete mapping;
 	}
 
 	// -------------  Singleton ApplicationCofig object should not be assignabled ----------- //
-	void operator=(const ControllerHandler&) = delete;
+	void operator=(const FrontController&) = delete;
 
 	/*
 		Static method to get only one instance of
 		the object with thread safe approach
 	*/
-	static ControllerHandler* InstanceOf();
+	static FrontController* InstanceOf();
 
 	std::string CallToController(std::string controller, std::string method, std::string requestBody);
 };

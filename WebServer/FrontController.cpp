@@ -1,21 +1,23 @@
-#include "ControllerHandler.h"
+#include "FrontController.h"
 #include"LoginController.h"
 #include"MasterController.h"
+#include"ItemAndGoodsController.h"
 
 #include <algorithm>
 #include"DashboardController.h"
 #include<mutex>
+#include"Util.h"
 
 std::mutex mtx;
 
-ControllerHandler* ControllerHandler::instance = nullptr;
+FrontController* FrontController::instance = nullptr;
 
-ControllerHandler* ControllerHandler::InstanceOf() {
+FrontController* FrontController::InstanceOf() {
 	if (instance == nullptr) {
 		std::unique_lock<std::mutex> lock(mtx, std::defer_lock);
 		mtx.lock(); {
 			try {
-				instance = new ControllerHandler();
+				instance = new FrontController();
 			}
 			catch (int err) {
 				mtx.unlock();
@@ -24,10 +26,10 @@ ControllerHandler* ControllerHandler::InstanceOf() {
 		}
 		mtx.unlock();
 	}
-	return ControllerHandler::instance;
+	return FrontController::instance;
 }
 
-std::string ControllerHandler::CallToController(std::string controller, std::string method, std::string requestBody) {
+std::string FrontController::CallToController(std::string controller, std::string method, std::string requestBody) {
 	std::string responseMessage = "";
 	if (this->mapping->count(controller) > 0) {
 		ControllerMapping _controllerMapping = this->mapping->find(controller)->second;
@@ -76,7 +78,21 @@ std::string ControllerHandler::CallToController(std::string controller, std::str
 				delete master;
 			}
 		}
-										 break;
+									  break;
+
+		case ControllerMapping::ItemAndGoods: {
+			ItemAndGoodsController* item = nullptr;
+			try {
+				item = new ItemAndGoodsController();
+				responseMessage = item->RequestGateway(method, requestBody);
+				delete item;
+			}
+			catch (const std::exception& e) {
+				std::cerr << e.what() << std::endl;
+				delete item;
+			}
+		}
+											break;
 		default:
 			break;
 		}

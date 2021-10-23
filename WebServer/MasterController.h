@@ -2,19 +2,23 @@
 
 #include "BaseController.h"
 #include"ApplicationConfig.h"
+#include"DbUtility.h"
 
 class MasterController : public BaseController<MasterController>
 {
 private:
-	ApplicationConfig* applicationConfig = nullptr;
-	std::string path;
+	DbUtility* dbUtility = nullptr;
+
 public:
 	MasterController() {
-		applicationConfig = ApplicationConfig::getInstance();
-		path = applicationConfig->getConnectionString();
+		dbUtility = new DbUtility();
 
 		add("PageMasterData", bind(&MasterController::PageMasterData, this, _1));
 		add("AddOrUpdateCatagory", bind(&MasterController::AddOrUpdateCatagory, this, _1));
+	}
+
+	~MasterController() {
+		delete dbUtility;
 	}
 
 	std::string PageMasterData(std::string);

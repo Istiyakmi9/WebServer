@@ -6,7 +6,7 @@
 #include"DashboardController.h"
 
 HttpContext::HttpContext(std::vector<char>* data, int dataLength) {
-	_controllerHandler = ControllerHandler::InstanceOf();
+	_frontController = FrontController::InstanceOf();
 	request = std::make_unique<HttpRequest>();
 	response = std::make_unique<HttpResponse>();
 	createHttpRequest(data, dataLength);
@@ -62,7 +62,7 @@ std::string HttpContext::handleIncomingRequest() {
 			controller = table.get()->find("controller")->second;
 
 		if (method != "" && controller != "")
-			responseMessage = _controllerHandler->CallToController(controller, method, this->request->getBody());
+			responseMessage = _frontController->CallToController(controller, method, this->request->getBody());
 	}
 	catch (std::string ex) {
 		std::cerr << "Error occured message: " << ex << std::endl;

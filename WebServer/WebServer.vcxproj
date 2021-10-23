@@ -156,27 +156,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseController.cpp" />
-    <ClCompile Include="ControllerHandler.cpp" />
+    <ClCompile Include="FrontController.cpp" />
     <ClCompile Include="DashboardController.cpp" />
+    <ClCompile Include="DbUtility.cpp" />
     <ClCompile Include="HttpContext.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="HttpResponse.cpp" />
+    <ClCompile Include="ItemAndGoodsController.cpp" />
     <ClCompile Include="LoginController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ManageSocket.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="MasterController.cpp" />
+    <ClCompile Include="metacontainer.cpp" />
     <ClCompile Include="RegistrationController.cpp" />
     <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseController.h" />
     <ClInclude Include="Constants.h" />
-    <ClInclude Include="ControllerHandler.h" />
+    <ClInclude Include="FrontController.h" />
     <ClInclude Include="DashboardController.h" />
+    <ClInclude Include="DbUtility.h" />
     <ClInclude Include="HttpContext.h" />
     <ClInclude Include="HttpRequest.h" />
     <ClInclude Include="HttpResponse.h" />
+    <ClInclude Include="ItemAndGoodsController.h" />
     <ClInclude Include="LoginController.h" />
     <ClInclude Include="ManageSocket.h" />
     <ClInclude Include="MasterController.h" />

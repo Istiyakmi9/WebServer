@@ -1,27 +1,71 @@
 #pragma once
 
-#include<iostream>
-#include<list>
-#include<map>
-
 #ifdef JSONMANAGER_H
 #define DECLSPEC __declspec(dllexport)
 #else
 #define DECLSPEC __declspec(dllimport)
 #endif
 
+#include<iostream>
+#include<sstream>
+#include<string>
+#include<list>
+#include<map>
+#include<ctime>
+#include<iomanip>
+
+enum class Type { String, Int, Long, Double, StructTm, Char, CharPointer, ConstChar, ConstCharPointer };
 
 class DECLSPEC JsonManager
 {
 public:
+	JsonManager() { }
 	std::string stringify(std::string key, std::string value);
+	std::string stringify(std::map<std::string, std::string>* p);
 	static std::unique_ptr<std::list<std::string>> splitter(std::string sourceString, std::string delimiter);
 	static std::unique_ptr<std::list<std::string>> firstSplitter(std::string sourceString, std::string delimiter);
-	
+
 	static void ltrim(std::string& s);
 	static void rtrim(std::string& s);
 	static void trim(std::string& s);
 
-	static std::map<std::string, std::string>* toRequestMap(std::string json);
+	static std::map<std::string, std::string>* toRequestMap(const std::string json);
+
+	static struct tm* ConvertToDateTime(const std::string &value);
+	template<typename T>
+	static T ConvertTo(std::string& value) {
+		const char* type = typeid(T).name();
+		std::map<std::string, Type> typemap = {
+			{ "std::string", Type::String },
+			{ "int", Type::Int },
+			{ "long", Type::Long },
+			{ "double", Type::Double },
+			{ "struct tm", Type::StructTm },
+			{ "char", Type::Char },
+			{ "char*", Type::CharPointer },
+			{ "const char", Type::ConstChar },
+			{ "const char*", Type::ConstCharPointer }
+		};
+
+		T result = T();
+		Type templateType = typemap.find(std::string(type))->second;
+		switch (templateType) {
+		case Type::String:
+		{
+			std::istringstream ss(value);
+			ss >> result;
+		}
+		break;
+		case Type::Long:
+		{
+			long l = stol(value);
+			std::istringstream ss(l);
+			ss >> result;
+		}
+		break;
+		}
+
+		return result;
+	}
 };
 

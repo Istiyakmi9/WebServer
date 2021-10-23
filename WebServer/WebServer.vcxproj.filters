@@ -45,13 +45,22 @@
     <ClCompile Include="DashboardController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ControllerHandler.cpp">
+    <ClCompile Include="FrontController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RegistrationController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MasterController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DbUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemAndGoodsController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="metacontainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,13 +89,19 @@
     <ClInclude Include="DashboardController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ControllerHandler.h">
+    <ClInclude Include="FrontController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RegistrationController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MasterController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DbUtility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemAndGoodsController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

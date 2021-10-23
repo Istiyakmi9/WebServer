@@ -79,4 +79,6 @@ void ApplicationConfig::readJsonFile(std::string filename) {
 		std::unique_ptr<JsonManager> json(new JsonManager());
 		config = json->toRequestMap(filedata.str());
 	}
+
+	delete file;
 }

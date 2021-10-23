@@ -1,6 +1,8 @@
 #pragma once
 
-class Constants
+#include<iostream>
+
+static class Constants
 {
 public:
 	static int Ok();

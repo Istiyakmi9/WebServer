@@ -30,6 +30,19 @@ void runAngular() {
 	system("node E:/ui/shopmanager/server.js");
 }
 
+void testVa(int num, ...) {
+	va_list args;
+
+	va_start(args, num);
+
+	for (int i = 0; i < num; i++) {
+		auto value = va_arg(args, int);
+		printf("%d:  %d\n", i, value);
+	}
+
+	va_end(args);
+}
+
 int main(int argc, char* argv[]) {
 	//runAngular();
 
