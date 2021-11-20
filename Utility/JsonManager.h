@@ -13,8 +13,9 @@
 #include<map>
 #include<ctime>
 #include<iomanip>
+#include"Util.h"
 
-enum class Type { String, Int, Long, Double, StructTm, Char, CharPointer, ConstChar, ConstCharPointer };
+//enum class Type { String, Int, Long, Double, StructTm, Char, CharPointer, ConstChar, ConstCharPointer };
 
 class DECLSPEC JsonManager
 {
@@ -31,10 +32,15 @@ public:
 
 	static std::map<std::string, std::string>* toRequestMap(const std::string json);
 
-	static struct tm* ConvertToDateTime(const std::string &value);
+	static struct tm* ConvertToDateTime(const std::string& value);
 	template<typename T>
 	static T ConvertTo(std::string& value) {
 		const char* type = typeid(T).name();
+		std::string Type = type;
+		if (Type.find("std::basic_string", 0) != -1) {
+			return T(value.c_str());
+		}
+		/*const char* type = typeid(T).name();
 		std::map<std::string, Type> typemap = {
 			{ "std::string", Type::String },
 			{ "int", Type::Int },
@@ -45,10 +51,18 @@ public:
 			{ "char*", Type::CharPointer },
 			{ "const char", Type::ConstChar },
 			{ "const char*", Type::ConstCharPointer }
-		};
+		};*/
 
 		T result = T();
-		Type templateType = typemap.find(std::string(type))->second;
+		try {;
+			std::istringstream ss(value);
+			ss >> result;
+		}
+		catch (const std::exception& e) {
+			std::cout << "Exception: " << e.what() << std::endl;
+		}
+
+		/*Type templateType = typemap.find(std::string(type))->second;
 		switch (templateType) {
 		case Type::String:
 		{
@@ -58,12 +72,11 @@ public:
 		break;
 		case Type::Long:
 		{
-			long l = stol(value);
-			std::istringstream ss(l);
+			std::istringstream ss(value);
 			ss >> result;
 		}
 		break;
-		}
+		}*/
 
 		return result;
 	}

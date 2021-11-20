@@ -44,3 +44,14 @@ std::string RegistrationController::appUser(std::string arg) {
 
 	return "{\"menu\": " + data + "}";
 }
+
+std::string RegistrationController::Customer(std::string arg) {
+	std::unique_ptr<UserDetail> userDetail(new UserDetail(arg));
+	userDetail->setPrivateFieldsValue(arg);
+
+	std::string data = "";
+	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
+	std::string path = applicationConfig->getConnectionString();
+
+	return "";
+}

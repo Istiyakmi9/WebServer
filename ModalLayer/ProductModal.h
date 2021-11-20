@@ -47,11 +47,16 @@ private:
 	long MRP;
 	long ActualPrice;
 	long SellingPrice;
+	long AdminId;
 	struct tm* ExpiryDate;
 
 public:
 	ProductModal();
 	~ProductModal();
+
+	long getAdminId();
+	void setAdminId(long value);
+
 	long getActualPrice();
 	void setActualPrice(long value);
 

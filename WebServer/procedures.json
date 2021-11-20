@@ -1,7 +1,15 @@
 {
-  "InsertCatagory": "Insert into Catagory(ParentCatagoryUid, CatagoryName, Description, AddedOn, UpdateOn, CreatedBy, ModifiedBy) Values",
+  "InsertCatagory": "Insert into Catagory(ParentCatagoryUid, CatagoryName, Description, AddedOn, UpdateOn, CGST, SGST, IGST, CreatedBy, ModifiedBy) Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   "SelectRolesAndMenu": "SELECT * from rolesandmenu;",
-  "SelectCatagory": "SELECT * from Catagory;",
+  "SelectCatagory": "SELECT * from Catagory where ?;",
+  "SelectStocks": "SELECT * FROM Stocks where ?",
+  "SelectStocksCount": "SELECT Count(1) as total FROM Stocks where ?",
+  "GetColumns": "Select * from TableMapping where PageName = '?';",
   "SelectItemBrands": "SELECT * from ItemBrands;",
-  "SelectLogin": "Select * from login where Username = '?' and password = '?';"
+  "SelectLogin": "Select * from login where Username = '?' and password = '?';",
+  "BrandNameExists": "Select * from ItemBrands where BrandName = '?';",
+  "SelectStockByName": "Select * from Stocks where ItemName = '?';",
+  "InsertNewBrand": "Insert into ItemBrands(BrandName, Description, CatagoryUid, AddedOn, UpdatedOn, CreatedBy, ModifiedBy) Values(?, ?, ?, ?, ?, ?, ?);",
+  "InsertNewStock": "Insert into Stocks(StockParentUid, ItemName, BrandUid, SerialNumber, CatagoryUid, Quantity, AvailableQuantity, ActualPrice, SellingPrice, MRP, Discount, ExpiredOn, AddedOn, ModifiedOn, CreatedBy, ModifiedBy, VendorUid) Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+  "UpdateStock": "Update Stocks Set BrandUid = ?, SerialNumber = '?', CatagoryUid = ?, Quantity = ?, AvailableQuantity = ?, ActualPrice = ?, SellingPrice = ?, MRP = ?, Discount = ?, ExpiredOn = '?', ModifiedOn = '?', ModifiedBy = ?, VendorUid = ? where StockUid = ?;"
 }

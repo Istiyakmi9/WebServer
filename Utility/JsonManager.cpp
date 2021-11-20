@@ -166,7 +166,8 @@ struct tm* JsonManager::ConvertToDateTime(const std::string& value) {
 
 	// Convert the tm structure to time_t value and return.
 	time_t rawtime = std::mktime(&dt);
-	struct tm* tminfo = nullptr;
+
+	struct tm* tminfo = new tm();
 
 	time(&rawtime);
 	localtime_s(tminfo, &rawtime);

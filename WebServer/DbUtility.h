@@ -23,11 +23,14 @@ public:
 
 	~DbUtility() {
 		delete context;
-		delete applicationConfig;
+		applicationConfig = nullptr;
+		delete result;
 	}
 
 	std::string getResult(std::string procName, std::list<std::string> args, std::string outputKeyName = "");
+	std::map<std::string, std::string>* getResultMap(std::string procName, std::list<std::string> args);
 	std::string execute(std::string procName, std::list<std::string> args);
+	int lastInsertId(std::string Table);
 	bool IsDbExists();
 };
 

@@ -183,9 +183,8 @@ int ManageSocket::createSocket() {
 		std::cout << "[BottomHalf WebServer]: Starting seperate thread to handle the incoming request." << std::endl;
 		//std::thread t(handleRequest, clientSocket);
 
-		HANDLE clientThreadHandler;
-
-		clientThreadHandler = CreateThread(0, 0, handleRequest, (void*)&clientSocket, 0, 0);
+		//HANDLE clientThreadHandler = NULL;
+		CreateThread(0, 0, handleRequest, (void*)&clientSocket, 0, 0);
 	}
 
 	// Close listening socket
