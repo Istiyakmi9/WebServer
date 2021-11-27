@@ -2,6 +2,9 @@
 
 #include<iostream>
 #include<winsock2.h>
+#include<sstream>
+#include<list>
+#include"JsonManager.h"
 
 class ManageSocket
 {
@@ -9,8 +12,6 @@ private:
 	int ReceivedChunkSize = 512;
 	int SendChunkSize = 4 * 1024;
 	void GetSenderDetail(sockaddr_in client);
-	int RecvFile(SOCKET s, const std::string& fileName);
-	int RecvBuffer(SOCKET s, char* buffer, int bufferSize);
 
 public:
 	explicit ManageSocket();

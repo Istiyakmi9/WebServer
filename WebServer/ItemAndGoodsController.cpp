@@ -14,6 +14,25 @@ std::string ItemAndGoodsController::GetStocks(std::string args) {
 	result->insert({ "rows", dbUtility->getResult("SelectStocks", { searchString }) });
 	result->insert({ "total", dbUtility->getResult("SelectStocksCount", { searchString }) });
 	result->insert({ "columns", dbUtility->getResult("GetColumns", { "Stocks" }) });
+	result->insert({ "customers", dbUtility->getResult("SelectCustomer", { "1=1" }) });
+	JsonManager* manager = new JsonManager();
+	auto response = manager->stringify(result);
+	delete manager;
+	delete result;
+	return response;
+}
+
+std::string ItemAndGoodsController::GetStocksToAddNew(std::string args) {
+	std::string searchString = " 1=1 ";
+	std::map<std::string, std::string>* result = new std::map<std::string, std::string>();
+	/*------------  Select Stocks detail data -------------------------*/
+	std::unique_ptr<std::map<std::string, std::string>> request(JsonManager::toRequestMap(args));
+	if (request->count("SearchString") > 0)
+		searchString = request->find("SearchString")->second;
+	result->insert({ "rows", dbUtility->getResult("SelectStocks", { searchString }) });
+	result->insert({ "total", dbUtility->getResult("SelectStocksCount", { searchString }) });
+	result->insert({ "columns", dbUtility->getResult("GetColumns", { "Stocks" }) });
+	result->insert({ "customers", dbUtility->getResult("SelectCustomer", { " 1=1 AND IsClient = 0" }) });
 	JsonManager* manager = new JsonManager();
 	auto response = manager->stringify(result);
 	delete manager;

@@ -154,136 +154,136 @@ void ProductModal::setAdminId(long value) {
 
 
 void ProductModal::setPrivateFieldsValue(std::string json) {
-	std::unique_ptr<std::map<std::string, FuncNames>> FuncIds(new std::map<std::string, FuncNames>());
-	FuncIds->insert({ "setActualPrice", FuncNames::setActualPrice });
-	FuncIds->insert({ "setBrandName", FuncNames::setBranName });
-	FuncIds->insert({ "setBrandUid", FuncNames::setBrandUid });
-	FuncIds->insert({ "setCGST", FuncNames::setCGST });
-	FuncIds->insert({ "setCatagoryName", FuncNames::setCatagoryName });
-	FuncIds->insert({ "setCatagoryUid", FuncNames::setCatagoryUid });
-	FuncIds->insert({ "setDescription", FuncNames::setDescription });
-	FuncIds->insert({ "setExpiryDate", FuncNames::setExpiryDate });
-	FuncIds->insert({ "setHSNNO", FuncNames::setHSNNo });
-	FuncIds->insert({ "setIGST", FuncNames::setIGST });
-	FuncIds->insert({ "setItemName", FuncNames::setItemName });
-	FuncIds->insert({ "setMRP", FuncNames::setMRP });
-	FuncIds->insert({ "setQuantity", FuncNames::setQuantity });
-	FuncIds->insert({ "setSGST", FuncNames::setSGST });
-	FuncIds->insert({ "setSellingPrice", FuncNames::setSellingPrice });
-	FuncIds->insert({ "setSerialNumber", FuncNames::setSerialNo });
-	FuncIds->insert({ "setVendorUid", FuncNames::setVendorUid });
-	FuncIds->insert({ "setExpiryDate", FuncNames::setExpiryDate });
+	std::unique_ptr<std::map<std::string, ProductModalFuncNames>> FuncIds(new std::map<std::string, ProductModalFuncNames>());
+	FuncIds->insert({ "setActualPrice", ProductModalFuncNames::setActualPrice });
+	FuncIds->insert({ "setBrandName", ProductModalFuncNames::setBranName });
+	FuncIds->insert({ "setBrandUid", ProductModalFuncNames::setBrandUid });
+	FuncIds->insert({ "setCGST", ProductModalFuncNames::setCGST });
+	FuncIds->insert({ "setCatagoryName", ProductModalFuncNames::setCatagoryName });
+	FuncIds->insert({ "setCatagoryUid", ProductModalFuncNames::setCatagoryUid });
+	FuncIds->insert({ "setDescription", ProductModalFuncNames::setDescription });
+	FuncIds->insert({ "setExpiryDate", ProductModalFuncNames::setExpiryDate });
+	FuncIds->insert({ "setHSNNO", ProductModalFuncNames::setHSNNo });
+	FuncIds->insert({ "setIGST", ProductModalFuncNames::setIGST });
+	FuncIds->insert({ "setItemName", ProductModalFuncNames::setItemName });
+	FuncIds->insert({ "setMRP", ProductModalFuncNames::setMRP });
+	FuncIds->insert({ "setQuantity", ProductModalFuncNames::setQuantity });
+	FuncIds->insert({ "setSGST", ProductModalFuncNames::setSGST });
+	FuncIds->insert({ "setSellingPrice", ProductModalFuncNames::setSellingPrice });
+	FuncIds->insert({ "setSerialNumber", ProductModalFuncNames::setSerialNo });
+	FuncIds->insert({ "setVendorUid", ProductModalFuncNames::setVendorUid });
+	FuncIds->insert({ "setExpiryDate", ProductModalFuncNames::setExpiryDate });
 
 
 	std::map<std::string, std::string>* requestMap = JsonManager::toRequestMap(json);
 
-	FuncNames name;
+	ProductModalFuncNames name;
 	std::string fnName = "";
 	setAdminId(1);
 	for (auto item = requestMap->begin(); item != requestMap->end(); item++) {
 		fnName = item->first;
-		std::toupper(fnName[0]);
+		fnName = std::toupper(fnName[0]);
 		fnName = "set" + fnName;
 		if (FuncIds->count(fnName) > 0) {
 			name = FuncIds->find(fnName)->second;
 			switch (name) {
-			case FuncNames::setActualPrice:
+			case ProductModalFuncNames::setActualPrice:
 			{
 				long value = JsonManager::ConvertTo<long>(item->second);
 				setActualPrice(value);
 			}
 			break;
-			case FuncNames::setBranName:
+			case ProductModalFuncNames::setBranName:
 			{
 				std::string value = JsonManager::ConvertTo<std::string>(item->second);
 				setBranName(value);
 			}
 			break;
-			case FuncNames::setBrandUid:
+			case ProductModalFuncNames::setBrandUid:
 			{
 				long value = JsonManager::ConvertTo<long>(item->second);
 				setBrandUid(value);
 			}
 			break;
-			case FuncNames::setCGST:
+			case ProductModalFuncNames::setCGST:
 			{
 				int value = JsonManager::ConvertTo<int>(item->second);
 				setCGST(value);
 			}
 			break;
-			case FuncNames::setCatagoryName:
+			case ProductModalFuncNames::setCatagoryName:
 			{
 				std::string value = JsonManager::ConvertTo<std::string>(item->second);
 				setCatagoryName(value);
 			}
 			break;
-			case FuncNames::setCatagoryUid:
+			case ProductModalFuncNames::setCatagoryUid:
 			{
 				long value = JsonManager::ConvertTo<long>(item->second);
 				setCatagoryUid(value);
 			}
 			break;
-			case FuncNames::setDescription:
+			case ProductModalFuncNames::setDescription:
 			{
 				std::string value = JsonManager::ConvertTo<std::string>(item->second);
 				setDescription(value);
 			}
 			break;
-			case FuncNames::setExpiryDate:
+			case ProductModalFuncNames::setExpiryDate:
 			{
 				struct tm* value = JsonManager::ConvertToDateTime(item->second);
 				setExpiryDate(value);
 			}
 			break;
-			case FuncNames::setHSNNo:
+			case ProductModalFuncNames::setHSNNo:
 			{
 				std::string value = JsonManager::ConvertTo<std::string>(item->second);
 				setHSNNo(value);
 			}
 			break;
-			case FuncNames::setIGST:
+			case ProductModalFuncNames::setIGST:
 			{
 				int value = JsonManager::ConvertTo<int>(item->second);
 				setIGST(value);
 			}
 			break;
-			case FuncNames::setItemName:
+			case ProductModalFuncNames::setItemName:
 			{
 				std::string value = JsonManager::ConvertTo<std::string>(item->second);
 				setItemName(value);
 			}
 			break;
-			case FuncNames::setMRP:
+			case ProductModalFuncNames::setMRP:
 			{
 				long value = JsonManager::ConvertTo<long>(item->second);
 				setMRP(value);
 			}
 			break;
-			case FuncNames::setQuantity:
+			case ProductModalFuncNames::setQuantity:
 			{
 				int value = JsonManager::ConvertTo<int>(item->second);
 				setQuantity(value);
 			}
 			break;
-			case FuncNames::setSGST:
+			case ProductModalFuncNames::setSGST:
 			{
 				int value = JsonManager::ConvertTo<int>(item->second);
 				setSGST(value);
 			}
 			break;
-			case FuncNames::setSellingPrice:
+			case ProductModalFuncNames::setSellingPrice:
 			{
 				long value = JsonManager::ConvertTo<long>(item->second);
 				setSellingPrice(value);
 			}
 			break;
-			case FuncNames::setSerialNo:
+			case ProductModalFuncNames::setSerialNo:
 			{
 				std::string value = JsonManager::ConvertTo<std::string>(item->second);
 				setSerialNo(value);
 			}
 			break;
-			case FuncNames::setVendorUid:
+			case ProductModalFuncNames::setVendorUid:
 			{
 				long value = JsonManager::ConvertTo<long>(item->second);
 				setVendorUid(value);

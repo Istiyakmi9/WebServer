@@ -147,12 +147,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Billing.h" />
     <ClInclude Include="CatagoryModal.h" />
     <ClInclude Include="ProductModal.h" />
     <ClInclude Include="UserDetail.h" />
     <ClInclude Include="VendorAndCustomer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Billing.cpp" />
     <ClCompile Include="CatagoryModal.cpp" />
     <ClCompile Include="ProductModal.cpp" />
     <ClCompile Include="UserDetail.cpp" />

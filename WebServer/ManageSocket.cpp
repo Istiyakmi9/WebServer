@@ -9,51 +9,6 @@
 
 ManageSocket::ManageSocket() { }
 
-///
-/// Recieves data in to buffer until bufferSize value is met
-///
-int ManageSocket::RecvBuffer(SOCKET s, char* buffer, int bufferSize) {
-	int i = 0;
-	while (i < bufferSize) {
-		const int l = recv(s, &buffer[i], __min(SendChunkSize, bufferSize - i), 0);
-		if (l < 0) { return l; } // this is an error
-		i += l;
-	}
-	return i;
-}
-
-/*
-// Receives a file
-// returns size of file if success
-// returns -1 if file couldn't be opened for output
-// returns -2 if couldn't receive file length properly
-// returns -3 if couldn't receive file properly
-*/
-int ManageSocket::RecvFile(SOCKET s, const std::string& fileName) {
-	std::ofstream file(fileName, std::ofstream::binary);
-	if (file.fail()) { return -1; }
-
-	int fileSize;
-	if (RecvBuffer(s, reinterpret_cast<char*>(&fileSize),
-		sizeof(fileSize)) != sizeof(fileSize)) {
-		return -2;
-	}
-
-	char* buffer = new char[ReceivedChunkSize];
-	bool errored = false;
-	int i = fileSize;
-	while (i != 0) {
-		const int r = RecvBuffer(s, buffer, (int)__min(i, (int)ReceivedChunkSize));
-		if ((r < 0) || !file.write(buffer, r)) { errored = true; break; }
-		i -= r;
-	}
-	delete[] buffer;
-
-	file.close();
-
-	return errored ? -3 : fileSize;
-}
-
 void ManageSocket::GetSenderDetail(sockaddr_in client) {
 	char host[NI_MAXHOST];			//  client's remote name
 	char service[NI_MAXSERV];		// Service (i.e port) the client is connect on
@@ -72,51 +27,42 @@ void ManageSocket::GetSenderDetail(sockaddr_in client) {
 }
 
 DWORD WINAPI handleRequest(__in LPVOID lpParameter) {
-	//unsigned int __stdcall handleRequest(void *args) {
 	SOCKET* descriptor = (SOCKET*)lpParameter;
 	SOCKET clientSocketDescriptor = *descriptor;
+	std::string methodType = "";
 	if (clientSocketDescriptor != -1) {
 		// While loop: accept and echo message back to client
-		const int BUFFERSIZE = 20 * 1024;
+		//std::map<std::string, std::string>* headers = new std::map<std::string, std::string>();
+		int BUFFERSIZE = 2 * 1024 * 1024;
 		std::vector<char>* buffer = new std::vector<char>(BUFFERSIZE);
 
-		memset(buffer->data(), 0, BUFFERSIZE);
 		//wait for client to send data
-		int bytesReceived = recv(clientSocketDescriptor, reinterpret_cast<char*>(buffer->data()), BUFFERSIZE, 0);
-		if (bytesReceived == SOCKET_ERROR) {
-			std::cout << "Connection closed." << std::endl;
+
+		bool firstLineFlag = true;
+		int bytesReceived = 0;
+
+		bytesReceived = recv(clientSocketDescriptor, reinterpret_cast<char*>(buffer->data()), BUFFERSIZE, 0);
+
+		int len = bytesReceived - 1;
+		std::string response = "";
+		std::unique_ptr<HttpContext> context(std::make_unique<HttpContext>(buffer, bytesReceived));
+		if (context->getRequestType() == "OPTIONS") {
+			response.append("HTTP/1.1 204 No Content\r\n"
+				"Connection: keep-alive\r\n"
+				"Content-Type: application/json; charset=UTF-8\r\n"
+				"Access-Control-Allow-Origin: *\r\n"
+				"Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE\r\n"
+				"Access-Control-Max-Age: 86400\r\n"
+				"Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With\r\n"
+			);
 		}
 		else {
-
-			if (bytesReceived == 0) {
-				std::cout << "Client diconnected " << std::endl;
-			}
-			else {
-				// echo message back to client
-				int len = bytesReceived - 1;
-				std::unique_ptr<HttpContext> context(std::make_unique<HttpContext>(buffer, bytesReceived));
-				std::string response = "";
-				if (context->getRequestType() != "OPTIONS")
-					response = context->handleIncomingRequest();
-				else {
-					//buffer->resize(bytesReceived);
-					//response = buffer->data();
-					//response.append("Access-Control-Allow-Origin: *");
-
-					response.append("HTTP/1.1 204 No Content\r\n"
-						"Connection: keep-alive\r\n"
-						"Content-Type: application/json; charset=UTF-8\r\n"
-						"Access-Control-Allow-Origin: *\r\n"
-						"Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE\r\n"
-						"Access-Control-Max-Age: 86400\r\n"
-						"Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With\r\n"
-					);
-				}
-				send(clientSocketDescriptor, response.c_str(), strlen(response.c_str()), 0);
-			}
+			response = context->handleIncomingRequest();
 		}
+		send(clientSocketDescriptor, response.c_str(), strlen(response.c_str()), 0);
 
-		delete buffer;
+		if (buffer != nullptr)
+			delete buffer;
 		// Close the socket 
 		closesocket(clientSocketDescriptor);
 	}
@@ -126,9 +72,9 @@ DWORD WINAPI handleRequest(__in LPVOID lpParameter) {
 int ManageSocket::createSocket() {
 	// Initilize winsock
 	WSADATA wsData;
-	WORD ver = MAKEWORD(2, 2);
 
-	int wsok = WSAStartup(ver, &wsData);
+	int wsok = WSAStartup(MAKEWORD(2, 2), &wsData);
+
 	if (wsok != 0) {
 		std::cerr << "Can't Initialize winsock! Quiting" << std::endl;
 		return -1;
@@ -181,9 +127,7 @@ int ManageSocket::createSocket() {
 
 		std::cout << "[BottomHalf WebServer]: Client request received." << std::endl;
 		std::cout << "[BottomHalf WebServer]: Starting seperate thread to handle the incoming request." << std::endl;
-		//std::thread t(handleRequest, clientSocket);
 
-		//HANDLE clientThreadHandler = NULL;
 		CreateThread(0, 0, handleRequest, (void*)&clientSocket, 0, 0);
 	}
 

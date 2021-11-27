@@ -27,6 +27,7 @@ ApplicationConfig* ApplicationConfig::getInstance() {
 
 ApplicationConfig::~ApplicationConfig() {
 	delete config;
+	delete headerName;
 }
 
 std::string ApplicationConfig::getApplicationWorkingDirectory() {
@@ -81,4 +82,17 @@ void ApplicationConfig::readJsonFile(std::string filename) {
 	}
 
 	delete file;
+}
+
+int ApplicationConfig::findHeader(std::string name) {
+	name = Util::toLower(name);
+	int index = 0;
+	for (auto ptr = headerName->begin(); ptr != headerName->end(); ptr++) {
+		index = name.find(ptr->first);
+		if (index >= 0) {
+			index = ptr->second;
+			break;
+		}
+	}
+	return index;
 }

@@ -1,8 +1,11 @@
 {
   "InsertCatagory": "Insert into Catagory(ParentCatagoryUid, CatagoryName, Description, AddedOn, UpdateOn, CGST, SGST, IGST, CreatedBy, ModifiedBy) Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   "SelectRolesAndMenu": "SELECT * from rolesandmenu;",
+  "InsertNewCustomer": "Insert into Customer(FirstName, LastName, Gender, MobileNo, AlternetMobileNo, ShopPhoneNumber, EmailId, ShopName, FullAddress, LicenseNo, GSTNo, State, City, Pincode, SiteUrl, ImagePath ,IsPremium, CreatedOn, UpdatedOn, CreatedBy, UpdatedBy, IsClient) Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
   "SelectCatagory": "SELECT * from Catagory where ?;",
   "SelectStocks": "SELECT * FROM Stocks where ?",
+  "SelectCustomer": "SELECT * FROM Customer where ?",
+  "SelectVendor": "SELECT * FROM Stocks where ?",
   "SelectStocksCount": "SELECT Count(1) as total FROM Stocks where ?",
   "GetColumns": "Select * from TableMapping where PageName = '?';",
   "SelectItemBrands": "SELECT * from ItemBrands;",

@@ -14,6 +14,7 @@
 #include<ctime>
 #include<iomanip>
 #include"Util.h"
+#include<unordered_map>
 
 //enum class Type { String, Int, Long, Double, StructTm, Char, CharPointer, ConstChar, ConstCharPointer };
 
@@ -21,6 +22,7 @@ class DECLSPEC JsonManager
 {
 public:
 	JsonManager() { }
+
 	std::string stringify(std::string key, std::string value);
 	std::string stringify(std::map<std::string, std::string>* p);
 	static std::unique_ptr<std::list<std::string>> splitter(std::string sourceString, std::string delimiter);
@@ -40,21 +42,9 @@ public:
 		if (Type.find("std::basic_string", 0) != -1) {
 			return T(value.c_str());
 		}
-		/*const char* type = typeid(T).name();
-		std::map<std::string, Type> typemap = {
-			{ "std::string", Type::String },
-			{ "int", Type::Int },
-			{ "long", Type::Long },
-			{ "double", Type::Double },
-			{ "struct tm", Type::StructTm },
-			{ "char", Type::Char },
-			{ "char*", Type::CharPointer },
-			{ "const char", Type::ConstChar },
-			{ "const char*", Type::ConstCharPointer }
-		};*/
-
 		T result = T();
-		try {;
+		try {
+			;
 			std::istringstream ss(value);
 			ss >> result;
 		}

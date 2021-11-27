@@ -22,6 +22,7 @@ public:
 		add("AddEditStockItem", bind(&ItemAndGoodsController::AddEditStockItem, this, _1));
 		add("GetStocks", bind(&ItemAndGoodsController::GetStocks, this, _1));
 		add("GetProductByFilter", bind(&ItemAndGoodsController::GetProductByFilter, this, _1));
+		add("GetStocksToAddNew", bind(&ItemAndGoodsController::GetStocksToAddNew, this, _1));
 	}
 
 	~ItemAndGoodsController() {
@@ -35,5 +36,6 @@ public:
 	stockItem getExistsRecord(std::string);
 	std::string GetStocks(std::string);
 	std::string GetProductByFilter(std::string);
+	std::string GetStocksToAddNew(std::string args);
 };
 

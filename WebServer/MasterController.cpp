@@ -10,7 +10,8 @@
 #include"Constants.h"
 
 std::string MasterController::PageMasterData(std::string args) {
-	std::unique_ptr<UserDetail> userDetail(new UserDetail(args));
+	std::unique_ptr<UserDetail> userDetail(new UserDetail());
+	userDetail->setPrivateFieldsValue(args);
 	return "";
 }
 

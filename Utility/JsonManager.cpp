@@ -134,6 +134,17 @@ std::map<std::string, std::string>* JsonManager::toRequestMap(std::string json) 
 						index++;
 					}
 				}
+				else {
+					while (json[index] != ',' && index < json.length()) {
+						if (json[index] != '\r' && json[index] != '\n') {
+							lineStream << json[index];
+						}
+
+						if (json[index] != ',')
+							break;
+						index++;
+					}
+				}
 			}
 			break;
 			}

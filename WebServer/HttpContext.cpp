@@ -17,7 +17,7 @@ void HttpContext::createHttpRequest(std::vector<char>* data, int dataLen) {
 }
 
 std::string HttpContext::getRequestType() {
-	return request->getType();
+	return request->type;
 }
 
 std::string HttpContext::getHttpResponse(std::string responseMessage) {

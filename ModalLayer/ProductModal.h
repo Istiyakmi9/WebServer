@@ -23,7 +23,7 @@ using std::bind;
 
 /*--------- Method names enum -----------*/
 
-enum class FuncNames {
+enum class ProductModalFuncNames {
 	setActualPrice, setBranName, setBrandUid, setCGST, setCatagoryName, setCatagoryUid, setDescription, setExpiryDate, setHSNNo, setIGST, setItemName, setMRP, setQuantity, setSGST, setSellingPrice, setSerialNo, setVendorUid
 };
 
