@@ -134,6 +134,17 @@ std::map<std::string, std::string>* JsonManager::toRequestMap(std::string json) 
 						index++;
 					}
 				}
+				else {
+					while (json[index] != ',' && index < json.length()) {
+						if (json[index] != '\r' && json[index] != '\n') {
+							lineStream << json[index];
+						}
+
+						if (json[index] != ',')
+							break;
+						index++;
+					}
+				}
 			}
 			break;
 			}
@@ -166,7 +177,8 @@ struct tm* JsonManager::ConvertToDateTime(const std::string& value) {
 
 	// Convert the tm structure to time_t value and return.
 	time_t rawtime = std::mktime(&dt);
-	struct tm* tminfo = nullptr;
+
+	struct tm* tminfo = new tm();
 
 	time(&rawtime);
 	localtime_s(tminfo, &rawtime);

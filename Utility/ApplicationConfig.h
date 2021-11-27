@@ -13,14 +13,19 @@
 class DECLSPEC ApplicationConfig
 {
 private:
-	ApplicationConfig() {}
+	ApplicationConfig() {
+		headerName = new std::map<std::string, int>();
+		headerName->insert({ "application/json", 1 });
+		headerName->insert({ "multipart/form-data;", 2 });
+	}
 	/*
 		Static instance of the class
 	*/
 	static ApplicationConfig* instance;
 	std::string applicationWorkingDirectory;
 	std::string connectionString;
-	std::map<std::string, std::string> *config = nullptr;
+	std::map<std::string, std::string>* config = nullptr;
+	std::map<std::string, int>* headerName = nullptr;
 	void readJsonFile(std::string);
 
 public:
@@ -46,5 +51,7 @@ public:
 	void setApplicationWorkingDirectory(std::string);
 	std::string get(std::string);
 	void loadConfiguration(std::string);
+
+	int findHeader(std::string);
 };
 

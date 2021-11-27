@@ -23,7 +23,7 @@ using std::bind;
 
 /*--------- Method names enum -----------*/
 
-enum class FuncNames {
+enum class ProductModalFuncNames {
 	setActualPrice, setBranName, setBrandUid, setCGST, setCatagoryName, setCatagoryUid, setDescription, setExpiryDate, setHSNNo, setIGST, setItemName, setMRP, setQuantity, setSGST, setSellingPrice, setSerialNo, setVendorUid
 };
 
@@ -47,11 +47,16 @@ private:
 	long MRP;
 	long ActualPrice;
 	long SellingPrice;
+	long AdminId;
 	struct tm* ExpiryDate;
 
 public:
 	ProductModal();
 	~ProductModal();
+
+	long getAdminId();
+	void setAdminId(long value);
+
 	long getActualPrice();
 	void setActualPrice(long value);
 

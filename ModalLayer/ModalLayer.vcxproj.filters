@@ -21,12 +21,30 @@
     <ClInclude Include="ProductModal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CatagoryModal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VendorAndCustomer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Billing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UserDetail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProductModal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CatagoryModal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VendorAndCustomer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Billing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

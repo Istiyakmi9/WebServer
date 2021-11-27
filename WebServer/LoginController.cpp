@@ -9,12 +9,14 @@
 #include"JsonManager.h"
 
 std::string LoginController::Auth(std::string arg) {
-	std::unique_ptr<UserDetail> userDetail(new UserDetail(arg));
+	std::unique_ptr<UserDetail> userDetail(new UserDetail());
+	userDetail->setPrivateFieldsValue(arg);
+
 	std::string data;
 	std::unique_ptr<std::map<std::string, std::string>> resultSet = nullptr;
 
 	std::string Result = dbUtility->getResult("SelectLogin", {
-			userDetail->getUserName(),
+			userDetail->getUsername(),
 			userDetail->getPassword()
 		});
 
@@ -25,7 +27,7 @@ std::string LoginController::Auth(std::string arg) {
 		resultSet->insert({ "menu", dbUtility->getResult("SelectRolesAndMenu", {}) });
 
 		/*------------  Select Catagory detail data -------------------------*/
-		resultSet->insert({ "catagory", dbUtility->getResult("SelectCatagory", {}) });
+		resultSet->insert({ "catagory", dbUtility->getResult("SelectCatagory", { "1=1" })});
 
 		/*------------  Select Brands detail data -------------------------*/
 		resultSet->insert({ "brands", dbUtility->getResult("SelectItemBrands", {}) });

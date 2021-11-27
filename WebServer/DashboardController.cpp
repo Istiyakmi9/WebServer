@@ -5,7 +5,8 @@
 #include<DbContext.h>
 
 std::string DashboardController::getMenu(std::string args) {
-	std::unique_ptr<UserDetail> userDetail(new UserDetail(args));
+	std::unique_ptr<UserDetail> userDetail(new UserDetail());
+	userDetail->setPrivateFieldsValue(args);
 
 	std::string data = "";
 	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
@@ -22,7 +23,7 @@ std::string DashboardController::getMenu(std::string args) {
 	if (fileExists) {
 		DbContext* context = new DbContext(path.c_str());
 		std::string query = "Select * from menu'";
-		query.append(userDetail->getUserName());
+		query.append(userDetail->getUsername());
 		query.append("' and Password = '");
 		query.append(userDetail->getPassword());
 		query.append("';");

@@ -7,6 +7,8 @@
 #include"DashboardController.h"
 #include<mutex>
 #include"Util.h"
+#include"RegistrationController.h"
+#include<exception>
 
 std::mutex mtx;
 
@@ -51,7 +53,16 @@ std::string FrontController::CallToController(std::string controller, std::strin
 		case ControllerMapping::Reports:
 			break;
 		case ControllerMapping::Registration: {
-
+			RegistrationController* registration = nullptr;
+			try {
+				registration = new RegistrationController();
+				responseMessage = registration->RequestGateway(method, requestBody);
+				delete registration;
+			}
+			catch (std::exception& e) {
+				delete registration;
+				std::cerr << e.what();
+			}
 		}
 											break;
 		case ControllerMapping::Dashboard: {
