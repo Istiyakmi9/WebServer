@@ -6,24 +6,31 @@
 #include<ApplicationConfig.h>
 #include<fstream>
 #include<sstream>
+#include"FormDataContainer.h"
 
 class HttpRequest
 {
 private:
-	unsigned long i = 0;
+	long i = 0;
+	bool isQueryString = false;
 	std::string body;
 	void setBody(std::string);
 	void setType(std::string);
-	std::shared_ptr<std::map<std::string, std::string>> routeTable;
-	void readHeaderContent(std::vector<char>*, int);
-	void readJsonBody(std::vector<char>*, int);
-	void readFormBody(std::vector<char>*, int, std::string);
-	std::stringstream readLine(std::vector<char>*, int);
-	std::string readFileData(std::vector<char>*, int, std::string);
-	std::vector<char>* rawFormData = nullptr;
+	std::map<std::string, std::string>* routeTable;
+	void readHeaderContent();
+	void readJsonBody();
+	void readFormBody();
+	std::stringstream readBodyNextLine();
+	std::string readFileData(FormDataContainer*);
 
+	char* rawRequestData = nullptr;
+	std::map<std::string, FormDataContainer*>* formDataContainerMap = nullptr;
+	bool buildRouteMapping(std::string);
+	FormDataContainer* convertToMap(std::string sourceString);
+
+	ApplicationConfig* config = nullptr;
 	int contentIndexPosition = 0;
-	unsigned long contentLength = 0;
+	long contentLength = 0;
 	std::string delimiter;
 	bool isFormData;
 public:
@@ -31,12 +38,14 @@ public:
 	~HttpRequest();
 	
 	std::string type;
-	ApplicationConfig* config = nullptr;
 	std::map<std::string, std::string>* header;
-	void buildRequest(std::vector<char>*, int contentLength);
 	std::string getBody();
-	bool buildRouteMapping(std::string);
-	std::shared_ptr<std::map<std::string, std::string>> getRouteTable();
-	std::map<std::string, std::string>* convertToMap(std::string sourceString);
+	void buildRequest(char*, int contentLength);
+	std::map<std::string, std::string>* getRouteTable();
+	std::string getFormJsonData(std::string);
+	char* getFormFileData(std::string);
+	bool saveFormFile(std::string searchName, std::string fileName, std::string path = "", bool isRelativePath = true);
+	std::map<std::string, FormDataContainer*>* getFromDataContainer();
+	char* getHttpRequestRawData();
 };
 

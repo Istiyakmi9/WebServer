@@ -156,6 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseController.cpp" />
+    <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="FormDataContainer.cpp" />
     <ClCompile Include="FrontController.cpp" />
     <ClCompile Include="DashboardController.cpp" />
     <ClCompile Include="DbUtility.cpp" />
@@ -170,11 +172,14 @@
     <ClCompile Include="MasterController.cpp" />
     <ClCompile Include="metacontainer.cpp" />
     <ClCompile Include="RegistrationController.cpp" />
+    <ClCompile Include="ReportsController.cpp" />
     <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseController.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="FormDataContainer.h" />
     <ClInclude Include="FrontController.h" />
     <ClInclude Include="DashboardController.h" />
     <ClInclude Include="DbUtility.h" />
@@ -186,6 +191,7 @@
     <ClInclude Include="ManageSocket.h" />
     <ClInclude Include="MasterController.h" />
     <ClInclude Include="RegistrationController.h" />
+    <ClInclude Include="ReportsController.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModalLayer\ModalLayer.vcxproj">

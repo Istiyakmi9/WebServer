@@ -2,6 +2,7 @@
 
 #include<iostream>
 #include<map>
+#include"HttpContext.h"
 
 enum class ControllerMapping {
 	Login = 1,
@@ -24,6 +25,7 @@ private:
 		mapping->insert({ "registration", ControllerMapping::Registration });
 		mapping->insert({ "master", ControllerMapping::Master });
 		mapping->insert({ "itemandgoods", ControllerMapping::ItemAndGoods });
+		mapping->insert({ "reports", ControllerMapping::Reports });
 	}
 
 public:
@@ -44,6 +46,6 @@ public:
 	*/
 	static FrontController* InstanceOf();
 
-	std::string CallToController(std::string controller, std::string method, std::string requestBody);
+	std::string CallToController(HttpContext*);
 };
 

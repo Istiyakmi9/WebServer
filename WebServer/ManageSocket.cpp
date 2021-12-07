@@ -7,7 +7,9 @@
 #include <iterator>
 #include <algorithm>
 
-ManageSocket::ManageSocket() { }
+ManageSocket::ManageSocket() {
+	frontController = FrontController::InstanceOf();
+}
 
 void ManageSocket::GetSenderDetail(sockaddr_in client) {
 	char host[NI_MAXHOST];			//  client's remote name
@@ -34,20 +36,22 @@ DWORD WINAPI handleRequest(__in LPVOID lpParameter) {
 		// While loop: accept and echo message back to client
 		//std::map<std::string, std::string>* headers = new std::map<std::string, std::string>();
 		int BUFFERSIZE = 2 * 1024 * 1024;
-		std::vector<char>* buffer = new std::vector<char>(BUFFERSIZE);
+		//std::vector<char>* buffer = new std::vector<char>(BUFFERSIZE);
+		char* buffer = new char[BUFFERSIZE];
 
 		//wait for client to send data
 
 		bool firstLineFlag = true;
 		int bytesReceived = 0;
 
-		bytesReceived = recv(clientSocketDescriptor, reinterpret_cast<char*>(buffer->data()), BUFFERSIZE, 0);
+		//bytesReceived = recv(clientSocketDescriptor, reinterpret_cast<char*>(buffer->data()), BUFFERSIZE, 0);
+		bytesReceived = recv(clientSocketDescriptor, buffer, BUFFERSIZE, 0);
 
 		int len = bytesReceived - 1;
-		std::string response = "";
-		std::unique_ptr<HttpContext> context(std::make_unique<HttpContext>(buffer, bytesReceived));
+		std::string responseMessage = "";
+		HttpContext* context = new HttpContext(buffer, bytesReceived);
 		if (context->getRequestType() == "OPTIONS") {
-			response.append("HTTP/1.1 204 No Content\r\n"
+			responseMessage.append("HTTP/1.1 204 No Content\r\n"
 				"Connection: keep-alive\r\n"
 				"Content-Type: application/json; charset=UTF-8\r\n"
 				"Access-Control-Allow-Origin: *\r\n"
@@ -57,13 +61,23 @@ DWORD WINAPI handleRequest(__in LPVOID lpParameter) {
 			);
 		}
 		else {
-			response = context->handleIncomingRequest();
-		}
-		send(clientSocketDescriptor, response.c_str(), strlen(response.c_str()), 0);
+			auto frontController = FrontController::InstanceOf();
 
-		if (buffer != nullptr)
-			delete buffer;
-		// Close the socket 
+			responseMessage = frontController->CallToController(context);
+			if (responseMessage.find("{", 0) == std::string::npos) {
+				if (responseMessage == "")
+					responseMessage = "\"\"";
+				else
+					responseMessage = "\"" + responseMessage + "\"";
+			}
+
+			responseMessage = context->getHttpResponse(responseMessage);
+			if (buffer != nullptr)
+				delete[] buffer;
+		}
+		send(clientSocketDescriptor, responseMessage.c_str(), strlen(responseMessage.c_str()), 0);
+
+		delete context;
 		closesocket(clientSocketDescriptor);
 	}
 	return 0;

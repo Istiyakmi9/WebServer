@@ -1,7 +1,8 @@
-#include "FrontController.h"
+#include"FrontController.h"
 #include"LoginController.h"
 #include"MasterController.h"
 #include"ItemAndGoodsController.h"
+#include"ReportsController.h"
 
 #include <algorithm>
 #include"DashboardController.h"
@@ -9,6 +10,7 @@
 #include"Util.h"
 #include"RegistrationController.h"
 #include<exception>
+#include"HttpContext.h"
 
 std::mutex mtx;
 
@@ -31,8 +33,25 @@ FrontController* FrontController::InstanceOf() {
 	return FrontController::instance;
 }
 
-std::string FrontController::CallToController(std::string controller, std::string method, std::string requestBody) {
+std::string FrontController::CallToController(HttpContext* httpContext) {
 	std::string responseMessage = "";
+	std::string method = "";
+	std::string controller = "";
+
+	std::map<std::string, std::string>* table = httpContext->getHttpRequest()->getRouteTable();
+	/*
+	*	Create controller mapping
+	*	and call appropriate controller
+	*	method using routetable
+	*/
+
+	if (table->count("method") > 0)
+		method = table->find("method")->second;
+
+	if (table->count("controller") > 0)
+		controller = table->find("controller")->second;
+
+
 	if (this->mapping->count(controller) > 0) {
 		ControllerMapping _controllerMapping = this->mapping->find(controller)->second;
 
@@ -42,7 +61,7 @@ std::string FrontController::CallToController(std::string controller, std::strin
 			LoginController* loginController = nullptr;
 			try {
 				loginController = new LoginController();
-				responseMessage = loginController->RequestGateway(method, requestBody);
+				responseMessage = loginController->RequestGateway(method, httpContext);
 				delete loginController;
 			}
 			catch (int e) {
@@ -50,13 +69,11 @@ std::string FrontController::CallToController(std::string controller, std::strin
 			}
 		}
 									 break;
-		case ControllerMapping::Reports:
-			break;
 		case ControllerMapping::Registration: {
 			RegistrationController* registration = nullptr;
 			try {
 				registration = new RegistrationController();
-				responseMessage = registration->RequestGateway(method, requestBody);
+				responseMessage = registration->RequestGateway(method, httpContext);
 				delete registration;
 			}
 			catch (std::exception& e) {
@@ -69,7 +86,7 @@ std::string FrontController::CallToController(std::string controller, std::strin
 			DashboardController* dashboard = nullptr;
 			try {
 				dashboard = new DashboardController();
-				responseMessage = dashboard->RequestGateway(method, requestBody);
+				responseMessage = dashboard->RequestGateway(method, httpContext);
 				delete dashboard;
 			}
 			catch (int e) {
@@ -82,7 +99,7 @@ std::string FrontController::CallToController(std::string controller, std::strin
 			MasterController* master = nullptr;
 			try {
 				master = new MasterController();
-				responseMessage = master->RequestGateway(method, requestBody);
+				responseMessage = master->RequestGateway(method, httpContext);
 				delete master;
 			}
 			catch (int e) {
@@ -95,7 +112,7 @@ std::string FrontController::CallToController(std::string controller, std::strin
 			ItemAndGoodsController* item = nullptr;
 			try {
 				item = new ItemAndGoodsController();
-				responseMessage = item->RequestGateway(method, requestBody);
+				responseMessage = item->RequestGateway(method, httpContext);
 				delete item;
 			}
 			catch (const std::exception& e) {
@@ -104,6 +121,19 @@ std::string FrontController::CallToController(std::string controller, std::strin
 			}
 		}
 											break;
+
+		case ControllerMapping::Reports: {
+			ReportsController* item = nullptr;
+			try {
+				item = new ReportsController();
+				responseMessage = item->RequestGateway(method, httpContext);
+				delete item;
+			}
+			catch (const std::exception& e) {
+				std::cerr << e.what() << std::endl;
+				delete item;
+			}
+		}
 		default:
 			break;
 		}

@@ -3,6 +3,7 @@
 #include"UserDetail.h"
 #include"DbContext.h"
 #include"Constants.h"
+#include "FileManager.h"
 
 std::string RegistrationController::appUser(std::string arg) {
 	std::unique_ptr<UserDetail> userDetail(new UserDetail());
@@ -12,44 +13,42 @@ std::string RegistrationController::appUser(std::string arg) {
 	ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
 	std::string path = applicationConfig->getConnectionString();
 
-	bool fileExists = false;
-	FILE* file;
-	fopen_s(&file, path.c_str(), "r");
-	if (file) {
-		fclose(file);
-		fileExists = true;
-	}
+	DbContext* context = new DbContext(path.c_str());
+	std::string query = "Select * from login where Username='";
+	query.append(userDetail->getUsername());
+	query.append("' and Password = '");
+	query.append(userDetail->getPassword());
+	query.append("';");
 
-	if (fileExists) {
-		DbContext* context = new DbContext(path.c_str());
-
-		std::string query = "Select * from login where Username='";
-		query.append(userDetail->getUsername());
-		query.append("' and Password = '");
-		query.append(userDetail->getPassword());
-		query.append("';");
-
-		std::map<std::string, std::string>* result = context->getResultSet(query.c_str());
-		if (result->count("table") > 0) {
-			std::free(result);
-			query = "SELECT * from rolesandmenu;";
-			result = context->getResultSet(query.c_str());
-
-			if (result->count("table") > 0)
-				data = result->find("table")->second;
-		}
+	std::map<std::string, std::string>* result = context->getResultSet(query.c_str());
+	if (result->count("table") > 0) {
 		std::free(result);
+		query = "SELECT * from rolesandmenu;";
+		result = context->getResultSet(query.c_str());
+
+		if (result->count("table") > 0)
+			data = result->find("table")->second;
 	}
-	else {
-		data.append("File: " + path + " not exists");
-	}
+	std::free(result);
 
 	return "{\"menu\": " + data + "}";
 }
 
 std::string RegistrationController::Customer(std::string arg) {
+	std::string data = "";
+	arg = this->httpRequest->getFormJsonData("userDetail");
 	std::unique_ptr<UserDetail> userDetail(new UserDetail());
 	userDetail->setPrivateFieldsValue(arg);
+	bool isUpdate = false;
+	std::string procedureName = "InsertNewCustomer";
+	int userId = userDetail->getUserUid();
+	if (userId > 0) {
+		data = dbUtility->getResult("CustomerExistsById", { Util::SqlValue(userId) });
+		if (data != "") {
+			procedureName = "UpdateCustomer";
+			isUpdate = true;
+		}
+	}
 
 	std::list<std::string> params;
 	params.push_back(Util::SqlStringValue(userDetail->getFirstName()));
@@ -69,21 +68,50 @@ std::string RegistrationController::Customer(std::string arg) {
 	params.push_back(Util::SqlStringValue(""));
 	params.push_back(Util::SqlStringValue(userDetail->getImagePath()));
 	params.push_back(Util::SqlValue(0));
-	params.push_back(Util::SqlStringValue("Date()"));
-	params.push_back(Util::SqlStringValue(""));
-	params.push_back(Util::SqlValue(1));
-	params.push_back(Util::SqlValue(0));
-	params.push_back(Util::SqlValue(userDetail->getIsClient()));
+	if (!isUpdate) {
+		params.push_back("Date()");
+		params.push_back(Util::SqlStringValue(""));
+		params.push_back(Util::SqlValue(1));
+		params.push_back(Util::SqlValue(0));
+		params.push_back(Util::SqlValue(userDetail->getIsClient()));
+	}
+	else {
+		params.push_back("Date()");
+		params.push_back(Util::SqlValue(1));
+		params.push_back(Util::SqlValue(userId));
+	}
 
-	std::string data = dbUtility->execute("InsertNewCustomer", params);
+	data = dbUtility->execute(procedureName, params);
+	if (data != "") {
+		long customerUid = userId;
+		if (!isUpdate) {
+			data = dbUtility->getResult("GetLastSequenceKey", { Util::SqlStringValue("Customer") });
+			auto result = Util::jsonToMap(data);
+			customerUid = atol(result->find("seq")->second.c_str());
+		}
+		FileManager* fileManager = new FileManager();
+		data = fileManager->saveFile("image", "file.jpg", "UploadedFiles", httpRequest, customerUid);
+		delete fileManager;
+	}
+	else {
+		data = "Fail to create. Please contact to admin.";
+	}
 	return data;
 }
 
 std::string RegistrationController::GetCustomers(std::string arg) {
-	std::unique_ptr<UserDetail> userDetail(new UserDetail());
-	userDetail->setPrivateFieldsValue(arg);
-
-	std::string SerachString = "1=1";
-	std::string data = dbUtility->execute("SelectCustomer", { SerachString });
-	return data;
+	std::string searchString = " 1=1 ";
+	std::map<std::string, std::string>* result = new std::map<std::string, std::string>();
+	/*------------  Select Stocks detail data -------------------------*/
+	std::unique_ptr<std::map<std::string, std::string>> request(JsonManager::toRequestMap(arg));
+	if (request->count("SearchString") > 0)
+		searchString = request->find("SearchString")->second;
+	result->insert({ "rows", dbUtility->getResult("SelectCustomer", { searchString }) });
+	result->insert({ "total", dbUtility->getResult("SelectCustomerCount", { searchString }) });
+	result->insert({ "columns", dbUtility->getResult("GetColumns", { "Customer" }) });
+	JsonManager* manager = new JsonManager();
+	auto response = manager->stringify(result);
+	delete manager;
+	delete result;
+	return response;
 }

@@ -5,12 +5,13 @@
 #include<sstream>
 #include<list>
 #include"JsonManager.h"
+#include"FrontController.h"
 
 class ManageSocket
 {
 private:
-	int ReceivedChunkSize = 512;
-	int SendChunkSize = 4 * 1024;
+	FrontController* frontController;
+
 	void GetSenderDetail(sockaddr_in client);
 
 public:

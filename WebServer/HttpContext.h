@@ -4,22 +4,25 @@
 #include<vector>
 #include"HttpRequest.h"
 #include"HttpResponse.h"
-#include"FrontController.h"
 
 class HttpContext
 {
 private:
-	std::unique_ptr<HttpRequest> request = nullptr;
-	std::unique_ptr<HttpResponse> response = nullptr;
-	void createHttpRequest(std::vector<char>*, int);
-	FrontController* _frontController;
+	HttpRequest* request = nullptr;
+	HttpResponse* response = nullptr;
+	void createHttpRequest(char*, int);
+	std::string controllerName;
+	std::string methodName;
 
 public:
-	explicit HttpContext(std::vector<char>*, int);
+	explicit HttpContext(char*, int);
+	~HttpContext() {
+		delete request;
+		delete response;
+	}
 
 	std::string getHttpResponse(std::string responseMessage);
 	std::string getRequestType();
-	std::string handleIncomingRequest();
 	std::string getOptionsResponse();
+	HttpRequest* getHttpRequest();
 };
-

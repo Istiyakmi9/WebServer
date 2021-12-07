@@ -1,4 +1,4 @@
-#include "HttpRequest.h"
+#include"HttpRequest.h"
 #include<string>
 #include <algorithm> 
 #include <locale>
@@ -9,41 +9,54 @@
 HttpRequest::HttpRequest() {
 	config = ApplicationConfig::getInstance();
 	header = new std::map<std::string, std::string>();
-	routeTable = std::make_shared<std::map<std::string, std::string>>();
+	routeTable = new std::map<std::string, std::string>();
 }
 
 bool HttpRequest::buildRouteMapping(std::string queryString) {
 	bool flag = false;
-	std::unique_ptr<std::list<std::string>> result = JsonManager::splitter(queryString, "\/");
-	if (result.get()->size() > 0) {
+	std::unique_ptr<std::list<std::string>> arguments = JsonManager::splitter(queryString, "?");
+	std::string data = *(std::next(arguments.get()->begin(), 0));
+	std::unique_ptr<std::list<std::string>> routes = JsonManager::splitter(data, "\/");
+	if (routes.get()->size() > 0) {
 		flag = true;
 		std::string value = "";
-		switch (result.get()->size()) {
+		switch (routes.get()->size()) {
 		case 1:
-			value = *(std::next(result.get()->begin(), 0));
+			value = *(std::next(routes.get()->begin(), 0));
 			this->routeTable->insert({ "controller", value });
 			break;
 		case 2:
-			value = *(std::next(result.get()->begin(), 0));
+			value = *(std::next(routes.get()->begin(), 0));
 			this->routeTable->insert({ "controller", value });
 
-			value = *(std::next(result.get()->begin(), 1));
+			value = *(std::next(routes.get()->begin(), 1));
 			this->routeTable->insert({ "method", value });
 			break;
 		default:
-			int i = 0;
-			std::list<std::string>::iterator itr = result.get()->begin();
-			while (itr != result.get()->end()) {
-				if (i == 0)
+			int i = 1;
+			std::list<std::string>::iterator itr = routes.get()->begin();
+			while (itr != routes.get()->end()) {
+				switch (i) {
+				case 1:
 					this->routeTable->insert({ "controller", *itr });
-				else if (i == 1)
+					break;
+				case 2:
 					this->routeTable->insert({ "method", *itr });
-				else
-					this->routeTable->insert({ "param" + std::to_string(i - 1), value });
+					break;
+				default:
+					this->routeTable->insert({ "route_" + std::to_string(i - 2), *itr });
+					break;
+				}
 				itr++;
 				i++;
 			}
 			break;
+		}
+
+		if (arguments->size() == 2) {
+			std::string queryString = *(std::next(arguments.get()->begin(), 1));
+			this->routeTable->insert({ "queryString", queryString });
+			this->isQueryString = true;
 		}
 	}
 	return flag;
@@ -51,8 +64,11 @@ bool HttpRequest::buildRouteMapping(std::string queryString) {
 
 HttpRequest::~HttpRequest() {
 	delete header;
-	if (rawFormData != nullptr)
-		delete rawFormData;
+	if (formDataContainerMap != nullptr)
+		Util::clean_map<std::string, FormDataContainer*>(formDataContainerMap);
+
+	if (routeTable != nullptr)
+		delete routeTable;
 }
 
 void HttpRequest::setType(std::string requestType) {
@@ -67,11 +83,11 @@ std::string HttpRequest::getBody() {
 	return this->body;
 }
 
-std::shared_ptr<std::map<std::string, std::string>> HttpRequest::getRouteTable() {
+std::map<std::string, std::string>* HttpRequest::getRouteTable() {
 	return routeTable;
 }
 
-void HttpRequest::readHeaderContent(std::vector<char>* rawRequestData, int contentLength) {
+void HttpRequest::readHeaderContent() {
 	std::ostringstream lineStream;
 	bool isFirstRead = true;
 	char ch = '\r';
@@ -79,11 +95,11 @@ void HttpRequest::readHeaderContent(std::vector<char>* rawRequestData, int conte
 		lineStream.str("");
 		lineStream.clear();
 
-		ch = rawRequestData->at(i);
+		ch = rawRequestData[i];
 		while (ch != '\n' && i < contentLength) {
 			lineStream << ch;
 			i++;
-			ch = rawRequestData->at(i);
+			ch = rawRequestData[i];
 		}
 
 		if (lineStream.str() == "\r" && ch == '\n') {
@@ -117,12 +133,12 @@ void HttpRequest::readHeaderContent(std::vector<char>* rawRequestData, int conte
 	}
 }
 
-std::stringstream HttpRequest::readLine(std::vector<char>* request, int length) {
+std::stringstream HttpRequest::readBodyNextLine() {
 	std::stringstream ss;
 	char ch = 0;
 	int index = 0;
-	while (i < length) {
-		ch = request->at(i);
+	while (i < this->contentLength) {
+		ch = rawRequestData[i];
 		if (ch == '\n') {
 			i++;
 			break;
@@ -136,44 +152,46 @@ std::stringstream HttpRequest::readLine(std::vector<char>* request, int length) 
 	return ss;
 }
 
-std::string HttpRequest::readFileData(std::vector<char>* request, int length, std::string _delimiter) {
+std::string HttpRequest::readFileData(FormDataContainer* item) {
 	std::ostringstream message;
-	char ch;
-	DWORD size = 0;
+	unsigned char ch = '\0';
+	unsigned endPosition = 0;
+	long long value = 0;
+	bool found = false;
 	try {
-		const char* fileName = "file.jpg";
-
-		HANDLE file = CreateFile(fileName,    // name of the file
-			GENERIC_WRITE, // open for writing
-			0,             // sharing mode, none in this case
-			0,             // use default security descriptor
-			CREATE_ALWAYS, // overwrite if exists
-			FILE_ATTRIBUTE_NORMAL,
-			0
-		);
-
-		std::ostringstream fileStream;
-		unsigned char* bytes = new unsigned char[10000];
-		if (file) {
-			i = i + 2;
-			while (i < length) {
-				memset(bytes, '\0', 10000);
-				while (i < length) {
-					ch = request->at(i);
-					bytes[size] = ch;
+		int delimiterLen = 72;
+		while (i < contentLength) {
+			ch = this->rawRequestData[i];
+			if (ch == '-') {
+				endPosition = i - 1;
+				i++;
+				message.str("");
+				int delimiterIndex = 0;
+				message << ch;
+				while (i < contentLength) {
+					ch = rawRequestData[i];
+					if (delimiterIndex < delimiterLen && ch != '\n') {
+						if (ch != '\r')
+							message << ch;
+					}
+					else {
+						value = message.str().find(this->delimiter);
+						if (value >= 0) {
+							item->setEndIndex(endPosition);
+							found = true;
+						}
+						i++;
+						break;
+					}
 					i++;
-					size++;
+					delimiterIndex++;
 				}
 
-				WriteFile(file, bytes, size, &size, NULL);
-				i++;
+				if (found)
+					break;
 			}
-			CloseHandle(file);
+			i++;
 		}
-		else {
-			std::cerr << "CreateFile() failed:" << GetLastError() << "\n";
-		}
-
 	}
 	catch (std::exception& ex) {
 		std::cerr << ex.what() << std::endl;
@@ -181,65 +199,82 @@ std::string HttpRequest::readFileData(std::vector<char>* request, int length, st
 	return "";
 }
 
-std::map<std::string, std::string>* HttpRequest::convertToMap(std::string sourceString) {
-	std::map<std::string, std::string>* result = new std::map<std::string, std::string>();
-	auto items = Util::splitter(sourceString, ";");
+FormDataContainer* HttpRequest::convertToMap(std::string sourceString) {
+	FormDataContainer* formDataContainer = new FormDataContainer();
+	std::string content = "";
+	do {
+		auto items = Util::splitter(sourceString, ";");
 
-	std::string key;
-	std::string value;
-	size_t pos = 0;
-	std::string delimiter = ": ";
-	auto ptr = items->begin();
-	while (ptr != items->end()) {
-		if ((pos = ptr->find(delimiter)) != std::string::npos) {
-			key = ptr->substr(0, pos);
-			key = Util::replace_all(key, "\"", "");
-			ptr->erase(0, pos + delimiter.length());
+		std::string key;
+		std::string value;
+		size_t pos = 0;
+		std::string delimiter = ": ";
+		auto ptr = items->begin();
+		while (ptr != items->end()) {
+			if ((pos = ptr->find(delimiter)) != std::string::npos) {
+				key = ptr->substr(0, pos);
+				key = Util::replace_all(key, "\"", "");
+				ptr->erase(0, pos + delimiter.length());
+			}
+
+			delimiter = "=";
+			value = Util::replace_all(*ptr, "\"", "");
+
+			if (key == "Content-Disposition")
+				formDataContainer->setContentDisposition(value);
+			else if (key == "name")
+				formDataContainer->setName(value);
+			else if (key == "filename")
+				formDataContainer->setFilename(value);
+			else if (key == "Content-Type")
+				formDataContainer->setFileContentType(value);
+
+			ptr++;
 		}
 
-		delimiter = "=";
-		value = Util::replace_all(*ptr, "\"", "");
-		result->insert({ key, value });
-		ptr++;
-	}
-
-	items.release();
-	return result;
+		items.release();
+		sourceString = readBodyNextLine().str();
+		if (sourceString == "")
+			break;
+	} while (i < contentLength);
+	return formDataContainer;
 }
 
-void HttpRequest::readFormBody(std::vector<char>* rawRequestData, int contentLength, std::string _delimiter) {
+void HttpRequest::readFormBody() {
 	char ch = '\0';
 	int size = 0;
 	this->contentIndexPosition = i;
 	std::stringstream ss;
-	ss = readLine(rawRequestData, contentLength);
+	std::string contentTypeValue = "";
+	ss = readBodyNextLine();
 
-	if (ss.str().find(_delimiter) >= 0) {
-		this->delimiter = _delimiter;
+	if (ss.str().find(delimiter) >= 0) {
 		if (header->count("Content-Length") > 0) {
-			this->contentLength = atol((header->find("Content-Length")->second).c_str());
+			this->contentLength = atol((header->find("Content-Length")->second).c_str()) + i - (delimiter.length() + 4);
 		}
 
 		while (i < contentLength) {
 			ss.clear();
-			ss = readLine(rawRequestData, contentLength);
-			auto items = convertToMap(ss.str());
+			ss = readBodyNextLine();
+			if (ss.str() != "") {
+				auto item = convertToMap(ss.str());
+				item->setStartIndex(i);
+				readFileData(item);
 
-			//readFileData(rawRequestData, contentLength, _delimiter);
-
-			delete items;
+				formDataContainerMap->insert({ item->getName(), item });
+			}
 		}
 	}
 
 	this->setBody("");
 }
 
-void HttpRequest::readJsonBody(std::vector<char>* rawRequestData, int contentLength) {
+void HttpRequest::readJsonBody() {
 	std::ostringstream lineStream;
 	bool isFirstRead = true;
 	char ch = '\r';
 	while (i < contentLength) {
-		ch = rawRequestData->at(i);
+		ch = rawRequestData[i];
 		if (ch != '\n')
 			lineStream << ch;
 		i++;
@@ -248,8 +283,10 @@ void HttpRequest::readJsonBody(std::vector<char>* rawRequestData, int contentLen
 	this->setBody(lineStream.str());
 }
 
-void HttpRequest::buildRequest(std::vector<char>* rawRequestData, int contentLength) {
+void HttpRequest::buildRequest(char* data, int length) {
 	this->i = 0;
+	this->rawRequestData = data;
+	this->contentLength = length;
 	std::string bodyData = "";
 	if (contentLength > 0) {
 		bool carrierReturnFound = false;
@@ -260,31 +297,159 @@ void HttpRequest::buildRequest(std::vector<char>* rawRequestData, int contentLen
 		std::string contentType = "";
 
 		//--------------- Reading header content ----------------//
-		readHeaderContent(rawRequestData, contentLength);
+		readHeaderContent();
 
-		if (header->count("Content-Type") > 0) {
-			contentType = header->find("Content-Type")->second;
-			int type = config->findHeader(contentType);
-			switch (type) {
-			case 1: {
-				/*--------------------------------  Request content is application/json format -------------------------------*/
-				readJsonBody(rawRequestData, contentLength);
+		if (this->type == "GET") {
+			if (this->isQueryString) {
+				std::stringstream ss;
+				ss << "{";
+				std::string arguments = this->routeTable->find("queryString")->second;
+				auto params = Util::splitter(arguments, "&");
+				std::string multi = "";
+				for (auto ptr = params->begin(); ptr != params->end(); ptr++) {
+					auto data = Util::splitter(arguments, "=");
+					ss << multi + "\"" + *(std::next(data.get()->begin(), 0)) + "\":";
+					ss << "\"" +  * (std::next(data.get()->begin(), 1)) + "\"";
+					multi = ", ";
+					data.release();
+				}
+				
+				params.release();
+				ss << "}";
+				this->setBody(ss.str());
 			}
-				  break;
+		}
+		else {
+			if (header->count("Content-Type") > 0) {
+				contentType = header->find("Content-Type")->second;
+				int type = config->findHeader(contentType);
+				switch (type) {
+				case 1: {
+					/*--------------------------------  Request content is application/json format -------------------------------*/
+					readJsonBody();
+				}
+					  break;
 
-			case 2: {
-				/*--------------------------------  Request content is form-data format  --------------------------------------------*/
-				auto formData = JsonManager::splitter(contentType, "boundary=");
-				auto it = std::next(formData->begin(), 1);
-				rawFormData = rawRequestData;
-				readFormBody(rawRequestData, contentLength, *it);
-			}
-				  break;
-			default: {
-				this->setBody("");
-			}
-				   break;
+				case 2: {
+					/*--------------------------------  Request content is form-data format  --------------------------------------------*/
+					auto formData = JsonManager::splitter(contentType, "boundary=");
+					auto it = std::next(formData->begin(), 1);
+					formDataContainerMap = new std::map<std::string, FormDataContainer*>();
+					this->delimiter = *it;
+					readFormBody();
+				}
+					  break;
+				default: {
+					this->setBody("");
+				}
+					   break;
+				}
 			}
 		}
 	}
+}
+
+std::string HttpRequest::getFormJsonData(std::string name) {
+	std::stringstream stream;
+	if (formDataContainerMap->count(name) > 0) {
+		FormDataContainer* formDataContainer = formDataContainerMap->find(name)->second;
+		int i = formDataContainer->getStartIndex();
+		int lastIndex = formDataContainer->getEndIndex();
+		while (i < lastIndex) {
+			stream << rawRequestData[i];
+			i++;
+		}
+	}
+	return stream.str();
+}
+
+char* HttpRequest::getFormFileData(std::string name) {
+	return nullptr;
+}
+
+bool HttpRequest::saveFormFile(std::string searchName, std::string fileName, std::string path, bool isRelativePath) {
+	std::string location = "";
+	if (formDataContainerMap->count(searchName) > 0) {
+		FormDataContainer* filePtr = formDataContainerMap->find(searchName)->second;
+		if (isRelativePath) {
+			ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
+			if (path != "") {
+				location = Util::combine(applicationConfig->getApplicationWorkingDirectory(), path);
+
+				if (CreateDirectory(location.c_str(), NULL)) {
+					//------------- Directory created -----------------
+					std::cout << "Folder create successfully" << std::endl;
+				}
+				else {
+					//------------- Directory already exists -----------------
+					std::cout << "Folder already exists" << std::endl;
+				}
+			}
+			else {
+				location = applicationConfig->getApplicationWorkingDirectory();
+			}
+
+			std::string filePath = Util::combine(location, fileName);
+			WIN32_FIND_DATA findFileData;
+			HANDLE handle = FindFirstFile(filePath.c_str(), &findFileData);
+			int found = handle != INVALID_HANDLE_VALUE;
+			HANDLE fileHandler = NULL;
+			if (found) {
+				DeleteFile(filePath.c_str());
+			}
+
+			fileHandler = CreateFile(
+				filePath.c_str(),
+				GENERIC_WRITE,
+				0,
+				0,
+				CREATE_ALWAYS,
+				FILE_ATTRIBUTE_NORMAL,
+				0
+			);
+
+			if (fileHandler) {
+				std::cout << "File create successfully" << std::endl;
+				long index = filePtr->getStartIndex();
+				long endIndex = filePtr->getEndIndex();
+				DWORD dwBytes = 0;
+				while (index < endIndex) {
+					WriteFile(
+						fileHandler,
+						&rawRequestData[index],
+						1,
+						&dwBytes,
+						NULL
+					);
+
+					index++;
+				}
+				CloseHandle(fileHandler);
+			}
+			else {
+				std::cout << "Fail to create file" << std::endl;
+				return false;
+			}
+		}
+		else {
+
+		}
+	}
+	else {
+		std::cerr << "No entry found with the name [" + fileName + "] in request form-data body." << std::endl;
+	}
+#ifdef  _WIN32
+
+#elif __linux__
+
+#endif //  _WIN32
+	return true;
+}
+
+std::map<std::string, FormDataContainer*>* HttpRequest::getFromDataContainer() {
+	return this->formDataContainerMap;
+}
+
+char* HttpRequest::getHttpRequestRawData() {
+	return this->rawRequestData;
 }
