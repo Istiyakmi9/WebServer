@@ -6,6 +6,7 @@
 #include"JsonManager.h"
 
 std::string DbUtility::getResult(std::string procName, std::list<std::string> args, std::string outputKeyName) {
+	std::stringstream param;
 	std::string query = applicationConfig->get(procName);
 	if (query != "") {
 		if (args.size() > 0) {
@@ -23,7 +24,6 @@ std::string DbUtility::getResult(std::string procName, std::list<std::string> ar
 			context = new DbContext(path.c_str());
 			result = context->getResultSet(query.c_str());
 
-			std::stringstream param;
 			if (result->count("table") > 0) {
 				if (outputKeyName != "")
 					param << "\"" + outputKeyName + "\": " + result->find("table")->second;
@@ -43,6 +43,7 @@ std::string DbUtility::getResult(std::string procName, std::list<std::string> ar
 	else {
 		return procName + " not found.";
 	}
+	return param.str();
 }
 
 std::map<std::string, std::string>* DbUtility::getResultMap(std::string procName, std::list<std::string> args) {

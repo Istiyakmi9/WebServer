@@ -5,6 +5,10 @@
 #include<functional>
 #include"DbUtility.h"
 #include"ProductModal.h"
+#include<list>
+#include"Util.h"
+#include"JsonManager.h"
+#include"ApplicationConfig.h"
 
 typedef struct {
 	int availableQuantity;

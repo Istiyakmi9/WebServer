@@ -1,6 +1,3 @@
-
-
-
 #pragma once
 
 #ifdef USERDETAIL_H
@@ -15,7 +12,7 @@
 /*--------- Method names enum -----------*/
 
 enum class FuncNames {
-	setIsClient, setAccessUid, setAddress, setAlternetMobileNo, setBankAccountNo, setCity, setCreatedOn, setDoJ, setDob, setEmail, setFirstName, setGSTNo, setIFSCCode, setImagePath, setLastName, setLicenseNo, setLoginId, setMobile, setPassword, setPincode, setRoleId, setShopName, setShopPhoneNumber, setShopUid, setState, setUserUid, setUsername
+	setExistingFileDetailId, setIsClient, setAccessUid, setAddress, setAlternetMobileNo, setBankAccountNo, setCity, setCreatedOn, setDoJ, setDob, setEmail, setFirstName, setGSTNo, setIFSCCode, setImagePath, setLastName, setLicenseNo, setLoginId, setMobile, setPassword, setPincode, setRoleId, setShopName, setShopPhoneNumber, setShopUid, setState, setUserUid, setUsername
 };
 
 class DECLSPEC UserDetail
@@ -48,12 +45,27 @@ private:
 	int ShopUid;
 	int AccessUid;
 	int RoleId;
+	int ExistingFileDetailId;
 
 public:
-	UserDetail(){ }	
+	UserDetail() {
+		this->LoginId = 0;
+		this->UserUid = 0;
+		this->Pincode = 0;
+		this->IsClient = false;
+		this->ShopUid = 0;
+		this->AccessUid = 0;
+		this->RoleId = 0;
+		this->ExistingFileDetailId = 0;
+	}
+
+	~UserDetail() { }
 
 	bool getIsClient();
 	void setIsClient(bool value);
+
+	int getExistingFileDetailId();
+	void setExistingFileDetailId(int value);
 
 	int getAccessUid();
 	void setAccessUid(int value);

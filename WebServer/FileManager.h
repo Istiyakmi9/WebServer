@@ -8,13 +8,14 @@ class FileManager
 {
 private:
 	DbUtility* dbUtility;
-	FileDetail* fileDetail;
 
 public:
 	FileManager();
 	~FileManager();
-	std::unique_ptr<FileDetail> saveHttpRequestedFile(std::string searchName, std::string path, std::string fileName, HttpRequest* httpRequest);
-	std::string saveFile(std::string searchName, std::string path, std::string fileName, HttpRequest* httpRequest, long ownerUid);
+	void saveHttpRequestedFile(std::string searchName, FileDetail* fileDetail, HttpRequest* httpRequest);
+	std::string saveFile(std::string searchName, FileDetail* fileDetail, HttpRequest* httpRequest);
 	std::string deleteFile(std::string path);
+	bool insertRecord(FileDetail* fileDetail);
+	bool updateRecord(FileDetail* fileDetail);
 };
 

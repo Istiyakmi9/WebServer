@@ -8,12 +8,8 @@
 
 #include<iostream>
 #include<list>
-#include"JsonManager.h"
-#include<map>
 #include<functional>
 #include<string>
-#include<map>
-#include"JsonManager.h"
 #include<map>
 #include"JsonManager.h"
 

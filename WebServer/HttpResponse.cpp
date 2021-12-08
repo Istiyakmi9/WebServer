@@ -13,6 +13,7 @@ std::string HttpResponse::getHttpResponseString(int flag, std::string responseDa
 	responseString.append("Date: " + std::string(buffer) + " GMT\n");
 	responseString.append("Server: Bottomhalf C++ Server\n");
 	responseString.append("Last-Modified: " + std::string(buffer) + " GMT\n");
+	responseString.append("Authorization: temp_token_asdklfuoas789faysofjasdflsdjf\n");	
 
 	if (customHeaders != nullptr) {
 		for (auto item : *customHeaders) {

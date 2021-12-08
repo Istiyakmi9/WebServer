@@ -27,6 +27,11 @@ private:
 	long FileOwnerId;
 
 public:
+	FileDetail() {
+		this->FileDetailId = 0;
+		this->FileOwnerId = 0;
+	}
+
 	std::string getExtension();
 	void setExtension(std::string value);
 

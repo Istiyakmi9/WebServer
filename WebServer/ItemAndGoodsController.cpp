@@ -1,8 +1,4 @@
 #include"ItemAndGoodsController.h"
-#include<list>
-#include"Util.h"
-#include"JsonManager.h"
-#include"ApplicationConfig.h"
 
 std::string ItemAndGoodsController::GetStocks(std::string args) {
 	std::string searchString = " 1=1 ";

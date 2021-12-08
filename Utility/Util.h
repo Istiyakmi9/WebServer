@@ -45,7 +45,7 @@ public:
 
 	static void trim(std::string& s);
 
-	static std::string replace_all(std::string, std::string, std::string);
+	static std::string replace_all(std::string originalString, std::string find, std::string replace);
 
 	template<typename V, class T>
 	static void clean_map(std::map<V, T>* elem) {

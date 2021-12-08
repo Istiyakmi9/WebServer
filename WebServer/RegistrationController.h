@@ -1,6 +1,12 @@
 #pragma once
 #include"BaseController.h"
 #include"DbUtility.h"
+#include"FileDetail.h"
+#include"UserDetail.h"
+#include"ApplicationConfig.h"
+#include"DbContext.h"
+#include"Constants.h"
+#include"FileManager.h"
 
 class RegistrationController : public BaseController<RegistrationController>
 {

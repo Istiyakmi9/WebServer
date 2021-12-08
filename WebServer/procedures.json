@@ -5,9 +5,10 @@
   "UpdateCustomer": "UPDATE Customer Set FirstName = ?, LastName = ?, Gender = ?, MobileNo = ?, AlternetMobileNo = ?, ShopPhoneNumber = ?, EmailId = ?, ShopName = ?, FullAddress = ?, LicenseNo = ?, GSTNo = ?, State = ?, City = ?, Pincode = ?, SiteUrl = ?, ImagePath = ?, IsPremium = ?, UpdatedOn = ?, UpdatedBy = ? Where CustomerUid = ?;",
   "SelectCatagory": "SELECT * from Catagory where ?;",
   "SelectStocks": "SELECT * FROM Stocks where ?",
-  "SelectCustomer": "SELECT * FROM Customer where ?",
-  "SelectCustomerCount": "SELECT Count(1) as total FROM Customer where ?",
-  "CustomerExistsById": "SELECT * FROM Customer where CustomerUid = ?",
+  "SelectCustomer": "SELECT * FROM Customer where ?;",
+  "SelectCustomerCount": "SELECT Count(1) as total FROM Customer where ?;",
+  "CustomerExistsById": "SELECT * FROM Customer where CustomerUid = ?;",
+  "GetFilesByOwnerId": "SELECT f.FileDetailId, f.FileName, f.FilePath, f.Extension, f.FileOwnerId from FileDetail f Where f.FileOwnerId = ?;",
   "CustomerExistsByMobile": "SELECT * FROM Customer where MobileNo = ?",
   "CustomerExistsByEmail": "SELECT * FROM Customer where EmailId = ?",
   "SelectVendor": "SELECT * FROM Stocks where ?",
@@ -20,5 +21,8 @@
   "GetLastSequenceKey": "Select seq from sqlite_sequence where name=?;",
   "InsertNewBrand": "Insert into ItemBrands(BrandName, Description, CatagoryUid, AddedOn, UpdatedOn, CreatedBy, ModifiedBy) Values(?, ?, ?, ?, ?, ?, ?);",
   "InsertNewStock": "Insert into Stocks(StockParentUid, ItemName, BrandUid, SerialNumber, CatagoryUid, Quantity, AvailableQuantity, ActualPrice, SellingPrice, MRP, Discount, ExpiredOn, AddedOn, ModifiedOn, CreatedBy, ModifiedBy, VendorUid) Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-  "UpdateStock": "Update Stocks Set BrandUid = ?, SerialNumber = '?', CatagoryUid = ?, Quantity = ?, AvailableQuantity = ?, ActualPrice = ?, SellingPrice = ?, MRP = ?, Discount = ?, ExpiredOn = '?', ModifiedOn = '?', ModifiedBy = ?, VendorUid = ? where StockUid = ?;"
+  "UpdateStock": "Update Stocks Set BrandUid = ?, SerialNumber = ?, CatagoryUid = ?, Quantity = ?, AvailableQuantity = ?, ActualPrice = ?, SellingPrice = ?, MRP = ?, Discount = ?, ExpiredOn = '?', ModifiedOn = '?', ModifiedBy = ?, VendorUid = ? where StockUid = ?;",
+  "SelectFileDetail": "Select * from FileDetail where FileDetailId = ?;",
+  "InsertFileDetail": "Insert into FileDetail(FileName, FilePath, Extension, FileOwnerId, CreatedOn, UpdatedOn) Values(?, ?, ?, ?, ?, ?);",
+  "UpdateFileDetail": "Update FileDetail Set FileName = ?, FilePath = ?, Extension = ?, FileOwnerId = ?, UpdatedOn = ? where FileDetailId = ?;"
 }

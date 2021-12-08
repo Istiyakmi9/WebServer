@@ -2,6 +2,9 @@
 
 #include<iostream>
 #include"BaseController.h"
+#include<JsonManager.h>
+#include<ApplicationConfig.h>
+#include<DbContext.h>
 
 class DashboardController : public BaseController<DashboardController>
 {

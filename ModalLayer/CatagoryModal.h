@@ -31,7 +31,14 @@ private:
 	long AdminId;
 
 public:
-	CatagoryModal() {}
+	CatagoryModal() {
+		this->CatagoryUid = 0;
+		this->ParentCatagoryUid = 0;
+		this->CGST = 0;
+		this->SGST = 0;
+		this->IGST = 0;
+		this->AdminId = 0;
+	}
 
 	std::string getAddedOn();
 	void setAddedOn(std::string value);

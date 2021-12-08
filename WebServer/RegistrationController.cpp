@@ -1,9 +1,4 @@
 #include"RegistrationController.h"
-#include"ApplicationConfig.h"
-#include"UserDetail.h"
-#include"DbContext.h"
-#include"Constants.h"
-#include "FileManager.h"
 
 std::string RegistrationController::appUser(std::string arg) {
 	std::unique_ptr<UserDetail> userDetail(new UserDetail());
@@ -37,64 +32,71 @@ std::string RegistrationController::appUser(std::string arg) {
 std::string RegistrationController::Customer(std::string arg) {
 	std::string data = "";
 	arg = this->httpRequest->getFormJsonData("userDetail");
-	std::unique_ptr<UserDetail> userDetail(new UserDetail());
-	userDetail->setPrivateFieldsValue(arg);
-	bool isUpdate = false;
-	std::string procedureName = "InsertNewCustomer";
-	int userId = userDetail->getUserUid();
-	if (userId > 0) {
-		data = dbUtility->getResult("CustomerExistsById", { Util::SqlValue(userId) });
-		if (data != "") {
-			procedureName = "UpdateCustomer";
-			isUpdate = true;
+	if (arg != "") {
+		std::unique_ptr<UserDetail> userDetail(new UserDetail());
+		userDetail->setPrivateFieldsValue(arg);
+		bool isUpdate = false;
+		std::string procedureName = "InsertNewCustomer";
+		int userId = userDetail->getUserUid();
+		if (userId > 0) {
+			data = dbUtility->getResult("CustomerExistsById", { Util::SqlValue(userId) });
+			if (data != "") {
+				procedureName = "UpdateCustomer";
+				isUpdate = true;
+			}
 		}
-	}
 
-	std::list<std::string> params;
-	params.push_back(Util::SqlStringValue(userDetail->getFirstName()));
-	params.push_back(Util::SqlStringValue(userDetail->getLastName()));
-	params.push_back(Util::SqlStringValue("true"));
-	params.push_back(Util::SqlStringValue(userDetail->getMobile()));
-	params.push_back(Util::SqlStringValue(userDetail->getAlternetMobileNo()));
-	params.push_back(Util::SqlStringValue(userDetail->getShopPhoneNumber()));
-	params.push_back(Util::SqlStringValue(userDetail->getEmail()));
-	params.push_back(Util::SqlStringValue(userDetail->getShopName()));
-	params.push_back(Util::SqlStringValue(userDetail->getAddress()));
-	params.push_back(Util::SqlStringValue(userDetail->getLicenseNo()));
-	params.push_back(Util::SqlStringValue(userDetail->getGSTNo()));
-	params.push_back(Util::SqlStringValue(userDetail->getState()));
-	params.push_back(Util::SqlStringValue(userDetail->getCity()));
-	params.push_back(Util::SqlStringValue(std::to_string(userDetail->getPincode())));
-	params.push_back(Util::SqlStringValue(""));
-	params.push_back(Util::SqlStringValue(userDetail->getImagePath()));
-	params.push_back(Util::SqlValue(0));
-	if (!isUpdate) {
-		params.push_back("Date()");
+		std::list<std::string> params;
+		params.push_back(Util::SqlStringValue(userDetail->getFirstName()));
+		params.push_back(Util::SqlStringValue(userDetail->getLastName()));
+		params.push_back(Util::SqlStringValue("true"));
+		params.push_back(Util::SqlStringValue(userDetail->getMobile()));
+		params.push_back(Util::SqlStringValue(userDetail->getAlternetMobileNo()));
+		params.push_back(Util::SqlStringValue(userDetail->getShopPhoneNumber()));
+		params.push_back(Util::SqlStringValue(userDetail->getEmail()));
+		params.push_back(Util::SqlStringValue(userDetail->getShopName()));
+		params.push_back(Util::SqlStringValue(userDetail->getAddress()));
+		params.push_back(Util::SqlStringValue(userDetail->getLicenseNo()));
+		params.push_back(Util::SqlStringValue(userDetail->getGSTNo()));
+		params.push_back(Util::SqlStringValue(userDetail->getState()));
+		params.push_back(Util::SqlStringValue(userDetail->getCity()));
+		params.push_back(Util::SqlStringValue(std::to_string(userDetail->getPincode())));
 		params.push_back(Util::SqlStringValue(""));
-		params.push_back(Util::SqlValue(1));
+		params.push_back(Util::SqlStringValue(userDetail->getImagePath()));
 		params.push_back(Util::SqlValue(0));
-		params.push_back(Util::SqlValue(userDetail->getIsClient()));
-	}
-	else {
-		params.push_back("Date()");
-		params.push_back(Util::SqlValue(1));
-		params.push_back(Util::SqlValue(userId));
-	}
-
-	data = dbUtility->execute(procedureName, params);
-	if (data != "") {
-		long customerUid = userId;
 		if (!isUpdate) {
-			data = dbUtility->getResult("GetLastSequenceKey", { Util::SqlStringValue("Customer") });
-			auto result = Util::jsonToMap(data);
-			customerUid = atol(result->find("seq")->second.c_str());
+			params.push_back("Date()");
+			params.push_back(Util::SqlStringValue(""));
+			params.push_back(Util::SqlValue(1));
+			params.push_back(Util::SqlValue(0));
+			params.push_back(Util::SqlValue(userDetail->getIsClient()));
 		}
-		FileManager* fileManager = new FileManager();
-		data = fileManager->saveFile("image", "file.jpg", "UploadedFiles", httpRequest, customerUid);
-		delete fileManager;
-	}
-	else {
-		data = "Fail to create. Please contact to admin.";
+		else {
+			params.push_back("Date()");
+			params.push_back(Util::SqlValue(1));
+			params.push_back(Util::SqlValue(userId));
+		}
+
+		data = dbUtility->execute(procedureName, params);
+		if (data != "") {
+			long customerUid = userId;
+			if (!isUpdate) {
+				data = dbUtility->getResult("GetLastSequenceKey", { Util::SqlStringValue("Customer") });
+				auto result = Util::jsonToMap(data);
+				customerUid = atol(result->find("seq")->second.c_str());
+			}
+			FileDetail* fileDetail = new FileDetail();
+			fileDetail->setFileDetailId(userDetail->getExistingFileDetailId());
+			fileDetail->setFileOwnerId(userDetail->getUserUid());
+			fileDetail->setFilePath("UploadedFiles");
+			FileManager* fileManager = new FileManager();
+			data = fileManager->saveFile("image", fileDetail, httpRequest);
+			delete fileDetail;
+			delete fileManager;
+		}
+		else {
+			data = "Fail to create. Please contact to admin.";
+		}
 	}
 	return data;
 }

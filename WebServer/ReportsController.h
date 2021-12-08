@@ -3,6 +3,7 @@
 #include<iostream>
 #include"BaseController.h"
 #include"DbUtility.h"
+#include"JsonManager.h"
 
 class ReportsController : public BaseController<ReportsController>
 {

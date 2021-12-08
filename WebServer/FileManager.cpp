@@ -3,33 +3,88 @@
 
 FileManager::FileManager() {
 	dbUtility = new DbUtility();
-	fileDetail = new FileDetail();
 }
 
 FileManager::~FileManager() {
 	delete dbUtility;
-	delete fileDetail;
 }
 
-std::string FileManager::saveFile(std::string searchName, std::string path, std::string fileName, HttpRequest* httpRequest, long ownerUid) {
-	std::unique_ptr<FileDetail> fileDetail = saveHttpRequestedFile("image", "UploadedFiles", "file.jpg", httpRequest);
-	fileDetail->setFileOwnerId(ownerUid);
-	std::string data = "";
-	return data;
+bool FileManager::insertRecord(FileDetail* fileDetail) {
+	std::string procedureName = "InsertFileDetail";
+	std::list<std::string> params;
+	params.push_back(Util::SqlStringValue(fileDetail->getFileName()));
+	params.push_back(Util::SqlStringValue(fileDetail->getFilePath()));
+	params.push_back(Util::SqlStringValue(fileDetail->getExtension()));
+	params.push_back(Util::SqlValue(fileDetail->getFileOwnerId()));
+	params.push_back("Date()");
+	params.push_back(Util::SqlStringValue(""));
+
+	std::string data = dbUtility->execute(procedureName, params);
+	bool flag = true;
+	if (data == "")
+		flag = false;
+	return flag;
+}
+
+bool FileManager::updateRecord(FileDetail* fileDetail) {
+	std::string procedureName = "UpdateFileDetail";
+	std::list<std::string> params;
+	params.push_back(Util::SqlStringValue(fileDetail->getFileName()));
+	params.push_back(Util::SqlStringValue(fileDetail->getFilePath()));
+	params.push_back(Util::SqlStringValue(fileDetail->getExtension()));
+	params.push_back(Util::SqlValue(fileDetail->getFileOwnerId()));
+	params.push_back("Date()");
+	params.push_back(Util::SqlValue(fileDetail->getFileDetailId()));
+
+	std::string data = dbUtility->execute(procedureName, params);
+	bool flag = true;
+	if (data == "")
+		flag = false;
+	return flag;
+}
+
+std::string FileManager::saveFile(std::string searchName, FileDetail* fileDetail, HttpRequest* httpRequest) {
+	std::string response = "";
+	saveHttpRequestedFile(searchName, fileDetail, httpRequest);
+	std::string data = dbUtility->getResult("SelectFileDetail", { Util::SqlValue(fileDetail->getFileDetailId()) });
+	if (data == "" || data == "[]") {
+		this->insertRecord(fileDetail);
+		response = "Created successfully";
+	}
+	else {
+		auto record = JsonManager::toRequestMap(data);
+		if (record->count("FilePath") > 0) {
+			ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
+			std::string path = Util::combine(applicationConfig->getApplicationWorkingDirectory(), record->find("FilePath")->second);
+			this->deleteFile(path);
+		}
+		this->updateRecord(fileDetail);
+		response = "Updated successfully";
+	}
+	return response;
 }
 
 std::string FileManager::deleteFile(std::string path) {
-	return "";
+	WIN32_FIND_DATA findFileData;
+	HANDLE handle = FindFirstFile(path.c_str(), &findFileData);
+	int found = handle != INVALID_HANDLE_VALUE;
+	HANDLE fileHandler = NULL;
+	if (found) {
+		DeleteFile(path.c_str());
+	}
+	return "File deleted successfully";
 }
 
-std::unique_ptr<FileDetail> FileManager::saveHttpRequestedFile(std::string searchName, std::string path, std::string fileName, HttpRequest* httpRequest) {
+void FileManager::saveHttpRequestedFile(std::string searchName, FileDetail* fileDetail, HttpRequest* httpRequest) {
 	std::string location = "";
-	std::unique_ptr<FileDetail> fileDetail(new FileDetail());
+	std::string fileName = "";
 	std::map<std::string, FormDataContainer*>* formDataContainerMap = httpRequest->getFromDataContainer();
 	char* rawRequestData = httpRequest->getHttpRequestRawData();
 	if (formDataContainerMap->count(searchName) > 0) {
 		FormDataContainer* filePtr = formDataContainerMap->find(searchName)->second;
-		fileDetail->setFileName(filePtr->getFilename());
+		fileName = filePtr->getFilename();
+		fileDetail->setFileName(fileName);
+
 		auto value = Util::splitter(fileName, ".");
 		if (value->size() == 2) {
 			fileDetail->setExtension(*(std::next(value->begin(), 1)));
@@ -37,7 +92,7 @@ std::unique_ptr<FileDetail> FileManager::saveHttpRequestedFile(std::string searc
 		value.release();
 
 		ApplicationConfig* applicationConfig = ApplicationConfig::getInstance();
-		location = Util::combine(applicationConfig->getApplicationWorkingDirectory(), path);
+		location = Util::combine(applicationConfig->getApplicationWorkingDirectory(), fileDetail->getFilePath());
 
 		if (CreateDirectory(location.c_str(), NULL)) {
 			//------------- Directory created -----------------
@@ -48,8 +103,10 @@ std::unique_ptr<FileDetail> FileManager::saveHttpRequestedFile(std::string searc
 			std::cout << "Folder already exists" << std::endl;
 		}
 
-		fileDetail->setFilePath(Util::combine(path, fileName));
 		std::string filePath = Util::combine(location, fileName);
+		std::string dbFilePath = Util::combine(fileDetail->getFilePath(), fileName);
+		dbFilePath = Util::replace_all(dbFilePath, "\\", "\\\\");
+		fileDetail->setFilePath(dbFilePath);
 		WIN32_FIND_DATA findFileData;
 		HANDLE handle = FindFirstFile(filePath.c_str(), &findFileData);
 		int found = handle != INVALID_HANDLE_VALUE;
@@ -88,7 +145,6 @@ std::unique_ptr<FileDetail> FileManager::saveHttpRequestedFile(std::string searc
 		}
 		else {
 			std::cout << "Fail to create file" << std::endl;
-			return fileDetail;
 		}
 	}
 	else {
@@ -99,5 +155,4 @@ std::unique_ptr<FileDetail> FileManager::saveHttpRequestedFile(std::string searc
 #elif __linux__
 
 #endif //  _WIN32
-	return fileDetail;
 }

@@ -217,6 +217,14 @@ void UserDetail::setIsClient(bool value) {
 	IsClient = value;
 }
 
+int UserDetail::getExistingFileDetailId() {
+	return ExistingFileDetailId;
+}
+
+void UserDetail::setExistingFileDetailId(int value) {
+	ExistingFileDetailId = value;
+}
+
 
 
 void UserDetail::setPrivateFieldsValue(std::string json) {
@@ -248,6 +256,7 @@ void UserDetail::setPrivateFieldsValue(std::string json) {
 	FuncIds->insert({ "setUserUid", FuncNames::setUserUid });
 	FuncIds->insert({ "setUsername", FuncNames::setUsername });
 	FuncIds->insert({ "setIsClient", FuncNames::setIsClient });
+	FuncIds->insert({ "setExistingFileDetailId", FuncNames::setExistingFileDetailId });
 
 
 	std::map<std::string, std::string>* requestMap = JsonManager::toRequestMap(json);
@@ -261,6 +270,11 @@ void UserDetail::setPrivateFieldsValue(std::string json) {
 		if (FuncIds->count(fnName) > 0) {
 			name = FuncIds->find(fnName)->second;
 			switch (name) {
+			case FuncNames::setExistingFileDetailId:
+			{
+				int value = JsonManager::ConvertTo<int>(item->second);
+				setExistingFileDetailId(value);
+			}
 			case FuncNames::setIsClient:
 			{
 				bool value = JsonManager::ConvertTo<bool>(item->second);
