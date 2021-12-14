@@ -45,7 +45,11 @@ bool FileManager::updateRecord(FileDetail* fileDetail) {
 
 std::string FileManager::saveFile(std::string searchName, FileDetail* fileDetail, HttpRequest* httpRequest) {
 	std::string response = "";
+#ifdef  _WIN32
 	saveHttpRequestedFile(searchName, fileDetail, httpRequest);
+#elif __linux__
+
+#endif //  _WIN32
 	std::string data = dbUtility->getResult("SelectFileDetail", { Util::SqlValue(fileDetail->getFileDetailId()) });
 	if (data == "" || data == "[]") {
 		this->insertRecord(fileDetail);
@@ -150,9 +154,8 @@ void FileManager::saveHttpRequestedFile(std::string searchName, FileDetail* file
 	else {
 		std::cerr << "No entry found with the name [" + fileName + "] in request form-data body." << std::endl;
 	}
-#ifdef  _WIN32
+}
 
-#elif __linux__
+void FileManager::saveHttpRequestedFile_Unix(std::string searchName, FileDetail* fileDetail, HttpRequest* httpRequest) {
 
-#endif //  _WIN32
 }

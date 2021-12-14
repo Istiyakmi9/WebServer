@@ -59,26 +59,40 @@ DWORD WINAPI handleRequest(__in LPVOID lpParameter) {
 				"Access-Control-Max-Age: 86400\r\n"
 				"Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With\r\n"
 			);
+			send(clientSocketDescriptor, responseMessage.c_str(), strlen(responseMessage.c_str()), 0);
 		}
 		else {
-			auto frontController = FrontController::InstanceOf();
+			switch (context->getHttpRequest()->requestedType) {
+			case 1: {
+				auto frontController = FrontController::InstanceOf();
 
-			responseMessage = frontController->CallToController(context);
-			if (responseMessage.find("{", 0) == std::string::npos) {
-				if (responseMessage == "")
-					responseMessage = "\"\"";
-				else
-					responseMessage = "\"" + responseMessage + "\"";
+				responseMessage = frontController->CallToController(context);
+				if (responseMessage.find("{", 0) == std::string::npos) {
+					if (responseMessage == "")
+						responseMessage = "\"\"";
+					else
+						responseMessage = "\"" + responseMessage + "\"";
+				}
+
+				responseMessage = context->getHttpResponse(responseMessage);
+				send(clientSocketDescriptor, responseMessage.c_str(), strlen(responseMessage.c_str()), 0);
 			}
-
-			responseMessage = context->getHttpResponse(responseMessage);
-			if (buffer != nullptr)
-				delete[] buffer;
+				  break;
+			case 2: {
+				ULONGLONG FileSize = 0;
+				ApplicationConfig* config = ApplicationConfig::getInstance();
+				std::string localFilePath = Util::combine(config->getApplicationWorkingDirectory(), context->getHttpRequest()->staticFilePath);
+				responseMessage = context->getHttpResponseForStaticFile(localFilePath, FileSize);
+				send(clientSocketDescriptor, responseMessage.c_str(), FileSize, 0);
+			}
+				  break;
+			}
 		}
-		send(clientSocketDescriptor, responseMessage.c_str(), strlen(responseMessage.c_str()), 0);
 
-		delete context;
+		if (buffer != nullptr)
+			delete[] buffer;
 		closesocket(clientSocketDescriptor);
+		delete context;
 	}
 	return 0;
 }

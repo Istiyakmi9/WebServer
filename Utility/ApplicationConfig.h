@@ -53,5 +53,12 @@ public:
 	void loadConfiguration(std::string);
 
 	int findHeader(std::string);
+
+	static enum class RequestMethodType {
+		GET = 1,
+		POST = 2,
+		PUT = 3,
+		FETCH = 4
+	};
 };
 

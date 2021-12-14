@@ -47,5 +47,8 @@ public:
 	bool saveFormFile(std::string searchName, std::string fileName, std::string path = "", bool isRelativePath = true);
 	std::map<std::string, FormDataContainer*>* getFromDataContainer();
 	char* getHttpRequestRawData();
+	int requestedType = 1;
+	std::string staticFilePath = "";
+	int requestMethodId = 1;
 };
 

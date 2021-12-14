@@ -4,16 +4,16 @@
 
 HttpResponse::HttpResponse() { }
 
-std::string HttpResponse::getHttpResponseString(int flag, std::string responseData, std::map<std::string, std::string> *customHeaders) {
+std::string HttpResponse::getHttpResponseString(int flag, std::string responseData, std::map<std::string, std::string>* customHeaders) {
 	char buffer[32];
 	time_t now = time(0);
 	ctime_s(buffer, 32, &now);
-	std::string responseString; 
+	std::string responseString;
 	responseString.append("HTTP/1.1 " + std::to_string(flag) + " OK\n");
 	responseString.append("Date: " + std::string(buffer) + " GMT\n");
 	responseString.append("Server: Bottomhalf C++ Server\n");
 	responseString.append("Last-Modified: " + std::string(buffer) + " GMT\n");
-	responseString.append("Authorization: temp_token_asdklfuoas789faysofjasdflsdjf\n");	
+	responseString.append("Authorization: temp_token_asdklfuoas789faysofjasdflsdjf\n");
 
 	if (customHeaders != nullptr) {
 		for (auto item : *customHeaders) {
@@ -21,10 +21,39 @@ std::string HttpResponse::getHttpResponseString(int flag, std::string responseDa
 		}
 	}
 
-	responseString.append("Content-Length: "+ std::to_string(responseData.length()) +"\n");
+	responseString.append("Content-Length: " + std::to_string(responseData.length()) + "\n");
 	responseString.append("Accept-Ranges: bytes\n");
 	responseString.append("Connection: close\n");
 	responseString.append("\n");
 	responseString.append(responseData);
+	return responseString;
+}
+
+std::string HttpResponse::getHttpResponseStaticFile(int flag, const char* imageBuffer, unsigned long long &size, std::string mimeType) {
+	char buffer[32];
+	time_t now = time(0);
+	ctime_s(buffer, 32, &now);
+	std::string responseString;
+	switch (flag) {
+	case 404:
+		responseString.append("HTTP/1.1 " + std::to_string(flag) + " NOT FOUND\n");
+		break;
+	case 200:
+		responseString.append("HTTP/1.1 " + std::to_string(flag) + " OK\n");
+		break;
+	}
+	responseString.append("Content-Transfer-Encoding: binary\n");
+	responseString.append("charset=ISO-8859-4\n");
+	responseString.append("Server: Bottomhalf C++ Server\n");
+	responseString.append("Accept-Ranges: bytes\n");
+	responseString.append("Cache-Control: public\n");
+	responseString.append("Content-Length: " + std::to_string(size) + "\n");
+	responseString.append("Content-Type: " + mimeType + "\n");
+	responseString.append("Date: " + std::string(buffer) + " GMT\n");
+	long messageSize = strlen(responseString.c_str());
+	messageSize += 2;
+	responseString.append("\r\n\r\n");
+	responseString.append(imageBuffer);
+	size += messageSize;
 	return responseString;
 }

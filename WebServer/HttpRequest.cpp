@@ -118,9 +118,19 @@ void HttpRequest::readHeaderContent() {
 					else {
 						this->setType(*(std::next(result.get()->begin(), 0)));
 						std::string routeMappringString = *(std::next(result.get()->begin(), 1));
-						buildRouteMapping(routeMappringString);
-						header->insert({ "HtmlType", *(std::next(result.get()->begin(), 2)) });
-						isFirstRead = false;
+						if (routeMappringString.find(".") == -1) {
+							buildRouteMapping(routeMappringString);
+							header->insert({ "HtmlType", *(std::next(result.get()->begin(), 2)) });
+							isFirstRead = false;
+						}
+						else {
+							auto value = Util::splitter(routeMappringString, ".");
+							if (value->size() > 1) {
+								this->requestedType = 2;
+								this->staticFilePath = routeMappringString;
+								break;
+							}
+						}
 					}
 				}
 				else {
@@ -299,50 +309,65 @@ void HttpRequest::buildRequest(char* data, int length) {
 		//--------------- Reading header content ----------------//
 		readHeaderContent();
 
-		if (this->type == "GET") {
-			if (this->isQueryString) {
-				std::stringstream ss;
-				ss << "{";
-				std::string arguments = this->routeTable->find("queryString")->second;
-				auto params = Util::splitter(arguments, "&");
-				std::string multi = "";
-				for (auto ptr = params->begin(); ptr != params->end(); ptr++) {
-					auto data = Util::splitter(arguments, "=");
-					ss << multi + "\"" + *(std::next(data.get()->begin(), 0)) + "\":";
-					ss << "\"" +  * (std::next(data.get()->begin(), 1)) + "\"";
-					multi = ", ";
-					data.release();
-				}
-				
-				params.release();
-				ss << "}";
-				this->setBody(ss.str());
-			}
-		}
-		else {
-			if (header->count("Content-Type") > 0) {
-				contentType = header->find("Content-Type")->second;
-				int type = config->findHeader(contentType);
-				switch (type) {
-				case 1: {
-					/*--------------------------------  Request content is application/json format -------------------------------*/
-					readJsonBody();
-				}
-					  break;
+		//switch (this->requestMethodId) {
+		//case (int)ApplicationConfig::RequestMethodType::GET:
+		//	break;
+		//case (int)ApplicationConfig::RequestMethodType::POST:
+		//	break;
+		//case (int)ApplicationConfig::RequestMethodType::PUT:
+		//	break;
+		//case (int)ApplicationConfig::RequestMethodType::FETCH:
+		//	break;
+		//default:
+		//	break;
+		//}
 
-				case 2: {
-					/*--------------------------------  Request content is form-data format  --------------------------------------------*/
-					auto formData = JsonManager::splitter(contentType, "boundary=");
-					auto it = std::next(formData->begin(), 1);
-					formDataContainerMap = new std::map<std::string, FormDataContainer*>();
-					this->delimiter = *it;
-					readFormBody();
+		if (this->requestedType == 1) {
+			if (this->type == "GET") {
+				if (this->isQueryString) {
+					std::stringstream ss;
+					ss << "{";
+					std::string arguments = this->routeTable->find("queryString")->second;
+					auto params = Util::splitter(arguments, "&");
+					std::string multi = "";
+					for (auto ptr = params->begin(); ptr != params->end(); ptr++) {
+						auto data = Util::splitter(arguments, "=");
+						ss << multi + "\"" + *(std::next(data.get()->begin(), 0)) + "\":";
+						ss << "\"" + *(std::next(data.get()->begin(), 1)) + "\"";
+						multi = ", ";
+						data.release();
+					}
+
+					params.release();
+					ss << "}";
+					this->setBody(ss.str());
 				}
-					  break;
-				default: {
-					this->setBody("");
-				}
-					   break;
+			}
+			else {
+				if (header->count("Content-Type") > 0) {
+					contentType = header->find("Content-Type")->second;
+					int type = config->findHeader(contentType);
+					switch (type) {
+					case 1: {
+						/*--------------------------------  Request content is application/json format -------------------------------*/
+						readJsonBody();
+					}
+						  break;
+
+					case 2: {
+						/*--------------------------------  Request content is form-data format  --------------------------------------------*/
+						auto formData = JsonManager::splitter(contentType, "boundary=");
+						auto it = std::next(formData->begin(), 1);
+						formDataContainerMap = new std::map<std::string, FormDataContainer*>();
+						this->delimiter = *it;
+						readFormBody();
+					}
+						  break;
+					default: {
+						this->setBody("");
+					}
+						   break;
+					}
 				}
 			}
 		}
