@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ManageSocket.cpp">
+    <ClCompile Include="SocketLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HttpContext.cpp">
@@ -28,9 +28,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Constants.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LoginController.cpp">
@@ -72,9 +69,12 @@
     <ClCompile Include="ReportsController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BillingController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ManageSocket.h">
+    <ClInclude Include="SocketLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HttpContext.h">
@@ -120,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ReportsController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BillingController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

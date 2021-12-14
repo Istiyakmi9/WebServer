@@ -1,13 +1,14 @@
 #pragma once
 
-#include<iostream>
-#include<map>
 #include"HttpContext.h"
-#include<algorithm>
-#include<mutex>
-#include"Util.h"
-#include<exception>
 #include"HttpContext.h"
+#include"DashboardController.h"
+#include"ReportsController.h"
+#include"ItemAndGoodsController.h"
+#include"RegistrationController.h"
+#include"MasterController.h"
+#include"LoginController.h"
+#include"BillingController.h"
 
 enum class ControllerMapping {
 	Login = 1,
@@ -15,7 +16,8 @@ enum class ControllerMapping {
 	Dashboard = 3,
 	Registration = 4,
 	Master = 5,
-	ItemAndGoods = 6
+	ItemAndGoods = 6,
+	Billing
 };
 
 class FrontController
@@ -31,6 +33,7 @@ private:
 		mapping->insert({ "master", ControllerMapping::Master });
 		mapping->insert({ "itemandgoods", ControllerMapping::ItemAndGoods });
 		mapping->insert({ "reports", ControllerMapping::Reports });
+		mapping->insert({ "billing", ControllerMapping::Billing });
 	}
 
 public:

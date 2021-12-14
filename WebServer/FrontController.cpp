@@ -1,11 +1,10 @@
 #include"FrontController.h"
-
-#include"DashboardController.h"
-#include"ReportsController.h"
-#include"ItemAndGoodsController.h"
-#include"RegistrationController.h"
-#include"MasterController.h"
-#include"LoginController.h"
+#include<algorithm>
+#include<mutex>
+#include"Util.h"
+#include<exception>
+#include<iostream>
+#include<map>
 
 std::mutex mtx;
 
@@ -52,6 +51,19 @@ std::string FrontController::CallToController(HttpContext* httpContext) {
 
 		switch (_controllerMapping)
 		{
+		case ControllerMapping::Billing: {
+			BillingController* billingController = nullptr;
+			try {
+				billingController = new BillingController();
+				billingController->addBillingData();
+				delete billingController;
+			}
+			catch (const std::exception& ex) {
+				std::cerr << ex.what() << std::endl;
+				delete billingController;
+			}
+		}
+									   break;
 		case ControllerMapping::Login: {
 			LoginController* loginController = nullptr;
 			try {
@@ -89,7 +101,6 @@ std::string FrontController::CallToController(HttpContext* httpContext) {
 			}
 		}
 										 break;
-
 		case ControllerMapping::Master: {
 			MasterController* master = nullptr;
 			try {
@@ -102,7 +113,6 @@ std::string FrontController::CallToController(HttpContext* httpContext) {
 			}
 		}
 									  break;
-
 		case ControllerMapping::ItemAndGoods: {
 			ItemAndGoodsController* item = nullptr;
 			try {
@@ -116,7 +126,6 @@ std::string FrontController::CallToController(HttpContext* httpContext) {
 			}
 		}
 											break;
-
 		case ControllerMapping::Reports: {
 			ReportsController* item = nullptr;
 			try {
