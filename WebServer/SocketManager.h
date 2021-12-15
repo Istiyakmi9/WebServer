@@ -8,14 +8,14 @@
 #include"FrontController.h"
 #include<list>
 
-class ManageSocket
+class SocketManager
 {
 private:
 	FrontController* frontController;
 	void GetSenderDetail(sockaddr_in client);
 
 public:
-	explicit ManageSocket();
+	explicit SocketManager();
 	int createSocket();
 	void bindSocket();
 	void listenClients();

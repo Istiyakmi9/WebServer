@@ -6,6 +6,8 @@
 #include"RegistrationController.h"
 #include"MasterController.h"
 #include"LoginController.h"
+#include"PurchaseController.h"
+#include"BillingController.h"
 
 std::mutex mtx;
 
@@ -44,7 +46,7 @@ std::string FrontController::CallToController(HttpContext* httpContext) {
 		method = table->find("method")->second;
 
 	if (table->count("controller") > 0)
-		controller = table->find("controller")->second;
+		controller = Util::toLower(table->find("controller")->second);
 
 
 	if (this->mapping->count(controller) > 0) {
@@ -52,6 +54,32 @@ std::string FrontController::CallToController(HttpContext* httpContext) {
 
 		switch (_controllerMapping)
 		{
+		case ControllerMapping::Purchase: {
+			PurchasedController* purchasedController = nullptr;
+			try {
+				purchasedController = new PurchasedController();
+				responseMessage = purchasedController->RequestGateway(method, httpContext);
+				delete purchasedController;
+			}
+			catch (const std::exception& ex) {
+				std::cerr << ex.what() << std::endl;
+				delete purchasedController;
+			}
+		}
+										break;
+		case ControllerMapping::Billing: {
+			BillingController* billingController = nullptr;
+			try {
+				billingController = new BillingController();
+				responseMessage = billingController->RequestGateway(method, httpContext);
+				delete billingController;
+			}
+			catch (const std::exception& ex) {
+				std::cerr << ex.what() << std::endl;
+				delete billingController;
+			}
+		}
+									   break;
 		case ControllerMapping::Login: {
 			LoginController* loginController = nullptr;
 			try {

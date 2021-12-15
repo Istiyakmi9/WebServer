@@ -18,7 +18,7 @@ std::string LoginController::Auth(std::string arg) {
 			userDetail->getPassword()
 		});
 
-	if (Result != "") {
+	if (Result != "" && Result != "[]") {
 		resultSet = std::make_unique<std::map<std::string, std::string>>();
 
 		/*------------  Select RolesAndMenu data -------------------------*/
@@ -32,6 +32,9 @@ std::string LoginController::Auth(std::string arg) {
 
 		std::unique_ptr<JsonManager> jsonManager(new JsonManager());
 		data = jsonManager->stringify(resultSet.get());
+	}
+	else {
+		data = "Invalid username or password";
 	}
 	delete userDetail;
 	return data;

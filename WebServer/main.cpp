@@ -2,7 +2,7 @@
 #include<Ws2tcpip.h>
 #include<vector>
 #include<chrono>
-#include"ManageSocket.h"
+#include"SocketManager.h"
 #include"JsonManager.h"
 #include<stdio.h>
 #include"ApplicationConfig.h"
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 	/*-------------- configure and read application json file -------------------*/
 	applicationConfig->loadConfiguration("procedures.json");
 
-	ManageSocket socket;
+	SocketManager socket;
 	socket.createSocket();
 
 	return 0;

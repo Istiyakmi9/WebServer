@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseController.cpp" />
+    <ClCompile Include="BillingController.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="FormDataContainer.cpp" />
     <ClCompile Include="FrontController.cpp" />
@@ -167,7 +168,8 @@
     <ClCompile Include="ItemAndGoodsController.cpp" />
     <ClCompile Include="LoginController.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ManageSocket.cpp" />
+    <ClCompile Include="PurchaseController.cpp" />
+    <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="MasterController.cpp" />
     <ClCompile Include="metacontainer.cpp" />
@@ -177,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseController.h" />
+    <ClInclude Include="BillingController.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="FormDataContainer.h" />
@@ -188,7 +191,8 @@
     <ClInclude Include="HttpResponse.h" />
     <ClInclude Include="ItemAndGoodsController.h" />
     <ClInclude Include="LoginController.h" />
-    <ClInclude Include="ManageSocket.h" />
+    <ClInclude Include="PurchaseController.h" />
+    <ClInclude Include="SocketManager.h" />
     <ClInclude Include="MasterController.h" />
     <ClInclude Include="RegistrationController.h" />
     <ClInclude Include="ReportsController.h" />

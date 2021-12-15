@@ -1,4 +1,4 @@
-#include"ManageSocket.h"
+#include"SocketManager.h"
 #include<Ws2tcpip.h>
 #include<thread>
 #include<vector>
@@ -7,11 +7,11 @@
 #include <iterator>
 #include <algorithm>
 
-ManageSocket::ManageSocket() {
+SocketManager::SocketManager() {
 	frontController = FrontController::InstanceOf();
 }
 
-void ManageSocket::GetSenderDetail(sockaddr_in client) {
+void SocketManager::GetSenderDetail(sockaddr_in client) {
 	char host[NI_MAXHOST];			//  client's remote name
 	char service[NI_MAXSERV];		// Service (i.e port) the client is connect on
 
@@ -97,7 +97,7 @@ DWORD WINAPI handleRequest(__in LPVOID lpParameter) {
 	return 0;
 }
 
-int ManageSocket::createSocket() {
+int SocketManager::createSocket() {
 	// Initilize winsock
 	WSADATA wsData;
 
@@ -168,10 +168,10 @@ int ManageSocket::createSocket() {
 	return 0;
 }
 
-void ManageSocket::bindSocket() {
+void SocketManager::bindSocket() {
 
 }
 
-void ManageSocket::listenClients() {
+void SocketManager::listenClients() {
 
 }

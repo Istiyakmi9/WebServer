@@ -15,7 +15,9 @@ enum class ControllerMapping {
 	Dashboard = 3,
 	Registration = 4,
 	Master = 5,
-	ItemAndGoods = 6
+	ItemAndGoods = 6,
+	Purchase = 7,
+	Billing = 8
 };
 
 class FrontController
@@ -31,6 +33,8 @@ private:
 		mapping->insert({ "master", ControllerMapping::Master });
 		mapping->insert({ "itemandgoods", ControllerMapping::ItemAndGoods });
 		mapping->insert({ "reports", ControllerMapping::Reports });
+		mapping->insert({ "purchase", ControllerMapping::Purchase });
+		mapping->insert({ "billing", ControllerMapping::Billing });
 	}
 
 public:
