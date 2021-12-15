@@ -5,5 +5,5 @@
 class BillingController
 {
 public:
-	std::string addBillingData();
+	std::string addBillingData(std::string param);
 };

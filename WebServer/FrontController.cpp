@@ -55,7 +55,7 @@ std::string FrontController::CallToController(HttpContext* httpContext) {
 			BillingController* billingController = nullptr;
 			try {
 				billingController = new BillingController();
-				billingController->addBillingData();
+				billingController->addBillingData(httpContext->getHttpRequest()->getBody());
 				delete billingController;
 			}
 			catch (const std::exception& ex) {
